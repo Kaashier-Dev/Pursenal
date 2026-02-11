@@ -1,8 +1,9 @@
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/credit_card.dart';
 
 abstract class CreditCardsRepository {
   Future<int> insertCCard({
-    required int account,
+    required Account account,
     required String? institution,
     required String? cardNetwork,
     required String? cardNo,
@@ -10,7 +11,7 @@ abstract class CreditCardsRepository {
   });
   Future<bool> updateCCard({
     required int id,
-    required int account,
+    required Account account,
     required String? institution,
     required String? cardNetwork,
     required String? cardNo,

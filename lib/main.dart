@@ -7,23 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pursenal/app/global/values.dart';
-import 'package:pursenal/core/repositories/drift/account_types_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/balances_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/banks_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/budgets_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/ccards_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/database_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/file_paths_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/loans_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/payment_reminders_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/people_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/profiles_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/projects_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/receivables_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/user_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/wallets_drift_repository.dart';
+import 'package:pursenal/core/abstracts/abstract_repositories.dart';
+import 'package:pursenal/core/abstracts/paired_device_repository.dart';
+import 'package:pursenal/core/repositories/drift/drift_repositories.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
+import 'package:pursenal/providers/lan_client_provider.dart';
+import 'package:pursenal/providers/lan_server_provider.dart';
+import 'package:pursenal/providers/profile_provider.dart';
 import 'package:pursenal/screens/welcome_screen.dart';
 import 'package:pursenal/utils/app_paths.dart';
 import 'package:pursenal/utils/services/notification_service.dart';
@@ -34,9 +25,10 @@ import 'package:pursenal/screens/profile_selection_screen.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
+import 'package:pursenal/viewmodels/lan_devices_viewmodel.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:timezone/data/latest.dart' as tz;
 
 // Get the database path for Drift
@@ -88,79 +80,100 @@ void main() async {
         create: (context) => AppDriftDatabase(connection, "b"),
         dispose: (context, db) => db.close(),
       ),
-      Provider<DatabaseDriftRepository>(
-        create: (context) =>
-            DatabaseDriftRepository(context.read<AppDriftDatabase>()),
+
+      ProxyProvider<AppDriftDatabase, DatabaseDriftRepository>(
+        update: (context, appDriftDatabase, _) =>
+            DatabaseDriftRepository(appDriftDatabase),
       ),
-      Provider<ProfilesDriftRepository>(
-        create: (context) =>
-            ProfilesDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      ChangeNotifierProvider<AppViewmodel>(
-        create: (context) => AppViewmodel(
-            context.read<ProfilesDriftRepository>(),
-            context.read<DatabaseDriftRepository>())
-          ..init(),
-      ),
-      Provider<AccountTypesDriftRepository>(
-        create: (context) =>
-            AccountTypesDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<AccountsDriftRepository>(
-        create: (context) =>
-            AccountsDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<BalancesDriftRepository>(
-        create: (context) =>
-            BalancesDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<BanksDriftRepository>(
-        create: (context) =>
-            BanksDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<BudgetsDriftRepository>(
-        create: (context) =>
-            BudgetsDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<CCardsDriftRepository>(
-        create: (context) =>
-            CCardsDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<LoansDriftRepository>(
-        create: (context) =>
-            LoansDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<PeopleDriftRepository>(
-        create: (context) =>
-            PeopleDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<ReceivablesDriftRepository>(
-        create: (context) =>
-            ReceivablesDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<WalletsDriftRepository>(
-        create: (context) =>
-            WalletsDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<TransactionsDriftRepository>(
-        create: (context) =>
-            TransactionsDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<ProjectsDriftRepository>(
-        create: (context) =>
-            ProjectsDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<PaymentRemindersDriftRepository>(
-        create: (context) =>
-            PaymentRemindersDriftRepository(context.read<AppDriftDatabase>()),
-      ),
-      Provider<FilePathsDriftRepository>(
-        create: (context) =>
-            FilePathsDriftRepository(context.read<AppDriftDatabase>()),
-      ),
+
       Provider<UserDriftRepository>(
         create: (context) =>
             UserDriftRepository(context.read<AppDriftDatabase>()),
+      ),
+
+      ChangeNotifierProvider(create: (context) => LANClientProvider()),
+      // Provider<DatabaseDriftRepository>(
+      //   create: (context) =>
+      //       DatabaseDriftRepository(context.read<AppDriftDatabase>()),
+      // ),
+      // Provider<ProfilesDriftRepository>(
+      //   create: (context) =>
+      //       ProfilesDriftRepository(context.read<AppDriftDatabase>()),
+      // ),
+
+      ProxyProvider<AppDriftDatabase, ProfilesDriftRepository>(
+        update: (context, appDriftDatabase, _) =>
+            ProfilesDriftRepository(appDriftDatabase),
+      ),
+      ChangeNotifierProvider<AppViewmodel>(
+        create: (context) => AppViewmodel(
+          context.read<ProfilesDriftRepository>(),
+          context.read<DatabaseDriftRepository>(),
+          context.read<UserDriftRepository>(),
+        )..init(),
+      ),
+      ChangeNotifierProxyProvider<AppViewmodel, ProfileProvider>(
+        create: (context) => ProfileProvider(),
+        update: (context, appViewmodel, profileProvider) {
+          if (profileProvider == null) {
+            return ProfileProvider()..setProfile(appViewmodel.selectedProfile);
+          }
+          return profileProvider..setProfile(appViewmodel.selectedProfile);
+        },
+      ),
+
+      ProxyProvider3<AppDriftDatabase, ProfileProvider, LANClientProvider,
+          RepositoryRegistry>(
+        update:
+            (context, database, profileProvider, lanClientProvider, previous) {
+          previous?.clearCache();
+          return RepositoryRegistry(
+              database: database,
+              profileProvider: profileProvider,
+              serverAddress: lanClientProvider.serverAddress);
+        },
+        dispose: (_, registry) => registry.dispose(),
+      ),
+
+      ChangeNotifierProxyProvider2<RepositoryRegistry, AppViewmodel,
+          LANDevicesViewmodel>(
+        create: (context) => LANDevicesViewmodel(
+          context.read<RepositoryRegistry>(),
+          () => context.read<AppViewmodel>().getUserDeviceInfo(),
+        ),
+        update: (context, registry, appViewmodel, previous) {
+          if (previous == null) {
+            return LANDevicesViewmodel(
+              registry,
+              () => appViewmodel.getUserDeviceInfo(),
+            );
+          }
+          previous.updateRepositoryRegistry(registry);
+          return previous;
+        },
+      ),
+
+      ChangeNotifierProvider<LANServerProvider>(
+        create: (context) => LANServerProvider(
+          context.read<RepositoryRegistry>().get<AccountTypesRepository>(),
+          context.read<RepositoryRegistry>().get<AccountsRepository>(),
+          context.read<RepositoryRegistry>().get<BalancesRepository>(),
+          context.read<RepositoryRegistry>().get<BanksRepository>(),
+          context.read<RepositoryRegistry>().get<BudgetsRepository>(),
+          context.read<RepositoryRegistry>().get<CreditCardsRepository>(),
+          context.read<RepositoryRegistry>().get<FilePathsRepository>(),
+          context.read<RepositoryRegistry>().get<LoansRepository>(),
+          context.read<RepositoryRegistry>().get<PaymentRemindersRepository>(),
+          context.read<RepositoryRegistry>().get<PeopleRepository>(),
+          context.read<ProfilesDriftRepository>(),
+          context.read<RepositoryRegistry>().get<ProjectsRepository>(),
+          context.read<RepositoryRegistry>().get<ReceivablesRepository>(),
+          context.read<RepositoryRegistry>().get<TransactionsRepository>(),
+          context.read<UserDriftRepository>(),
+          context.read<RepositoryRegistry>().get<WalletsRepository>(),
+          () => context.read<AppViewmodel>().getUserDeviceInfo(),
+          context.read<RepositoryRegistry>().get<PairedDeviceRepository>(),
+        ),
       ),
       ChangeNotifierProvider<ThemeProvider>.value(
         value: themeProvider,

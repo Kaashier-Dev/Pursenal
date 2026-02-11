@@ -6,16 +6,20 @@ import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/project.dart';
 import 'package:pursenal/core/abstracts/account_types_repository.dart';
 import 'package:pursenal/core/abstracts/projects_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
 class ProjectsViewmodel extends ChangeNotifier {
   final ProjectsRepository _projectsRepository;
   final AccountTypesRepository _accountTypesRepository;
 
-  ProjectsViewmodel(this._projectsRepository, this._accountTypesRepository,
+  ProjectsViewmodel(RepositoryRegistry repositoryRegistry,
       {required Profile profile, int accTypeID = 4})
       : _profile = profile,
-        _accTypeID = accTypeID;
+        _accTypeID = accTypeID,
+        _projectsRepository = repositoryRegistry.get<ProjectsRepository>(),
+        _accountTypesRepository =
+            repositoryRegistry.get<AccountTypesRepository>();
 
   int _accTypeID;
 
@@ -95,7 +99,7 @@ class ProjectsViewmodel extends ChangeNotifier {
       _projectsRepository.updateProjectStatus(
           id: p.dbID,
           name: p.name,
-          profile: _profile.dbID,
+          profile: _profile,
           description: p.description,
           endDate: p.endDate,
           startDate: p.startDate,

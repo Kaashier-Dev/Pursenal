@@ -9,11 +9,12 @@ import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/project.dart';
 import 'package:pursenal/core/repositories/drift/file_paths_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/projects_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/project_entry_viewmodel.dart';
 import 'package:pursenal/widgets/shared/images_selector.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/widgets/shared/the_date_picker.dart';
 
 class ProjectEntryScreen extends StatelessWidget {
@@ -27,13 +28,11 @@ class ProjectEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectsDriftRepository =
-        Provider.of<ProjectsDriftRepository>(context, listen: false);
-    final filePathsDriftRepository =
-        Provider.of<FilePathsDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
+
     return ChangeNotifierProvider(
-      create: (context) => ProjectEntryViewmodel(
-          projectsDriftRepository, filePathsDriftRepository,
+      create: (context) => ProjectEntryViewmodel(repositoryRegistry,
           project: project, profile: profile)
         ..init(),
       builder: (context, child) => Scaffold(

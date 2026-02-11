@@ -1,8 +1,9 @@
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/people.dart';
 
 abstract class PeopleRepository {
   Future<int> insertPeople({
-    required int account,
+    required Account account,
     String? address,
     String? email,
     String? tin,
@@ -10,7 +11,7 @@ abstract class PeopleRepository {
     String? zip,
   });
   Future<bool> updatePeople({
-    required int account,
+    required Account account,
     required int id,
     String? address,
     String? email,

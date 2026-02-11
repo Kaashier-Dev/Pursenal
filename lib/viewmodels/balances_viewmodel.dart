@@ -14,6 +14,7 @@ import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/wallet.dart';
 import 'package:pursenal/core/abstracts/account_types_repository.dart';
 import 'package:pursenal/core/abstracts/accounts_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
 class BalancesViewmodel extends ChangeNotifier {
@@ -23,15 +24,16 @@ class BalancesViewmodel extends ChangeNotifier {
   final BanksRepository _banksRepository;
   final CreditCardsRepository _cardsRepository;
   final LoansRepository _loansRepository;
-  BalancesViewmodel(
-      this._accountsRepository,
-      this._accountTypesRepository,
-      this._banksRepository,
-      this._cardsRepository,
-      this._loansRepository,
-      this._walletsRepository,
+  BalancesViewmodel(RepositoryRegistry repositoryRegistry,
       {required Profile profile})
-      : _profile = profile;
+      : _profile = profile,
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>(),
+        _accountTypesRepository =
+            repositoryRegistry.get<AccountTypesRepository>(),
+        _walletsRepository = repositoryRegistry.get<WalletsRepository>(),
+        _banksRepository = repositoryRegistry.get<BanksRepository>(),
+        _cardsRepository = repositoryRegistry.get<CreditCardsRepository>(),
+        _loansRepository = repositoryRegistry.get<LoansRepository>();
 
   Future<void> init() async {
     try {

@@ -8,13 +8,14 @@ import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/repositories/drift/account_types_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/screens/account_entry_screen.dart';
 import 'package:pursenal/screens/account_screen.dart';
 import 'package:pursenal/viewmodels/accounts_viewmodel.dart';
 import 'package:pursenal/widgets/shared/acc_type_icon.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
 import 'package:pursenal/widgets/shared/search_field.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class AccountsScreen extends StatelessWidget {
   const AccountsScreen({
@@ -27,14 +28,11 @@ class AccountsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accountTypesDriftRepository =
-        Provider.of<AccountTypesDriftRepository>(context, listen: false);
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
     return ChangeNotifierProvider<AccountsViewmodel>(
       create: (context) => AccountsViewmodel(
-        accountsDriftRepository,
-        accountTypesDriftRepository,
+        repositoryRegistry,
         profile: profile,
       )..init(),
       builder: (context, child) => Consumer<AccountsViewmodel>(

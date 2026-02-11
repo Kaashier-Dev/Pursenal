@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:pursenal/app/extensions/drift_models.dart';
 import 'package:pursenal/core/abstracts/people_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/people.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
@@ -11,7 +12,7 @@ class PeopleDriftRepository implements PeopleRepository {
 
   @override
   Future<int> insertPeople({
-    required int account,
+    required Account account,
     String? address,
     String? email,
     String? tin,
@@ -20,7 +21,7 @@ class PeopleDriftRepository implements PeopleRepository {
   }) async {
     try {
       final people = DriftPeopleCompanion.insert(
-        accountId: account,
+        accountId: account.dbID,
         address: Value(address),
         email: Value(email),
         phone: Value(phone),
@@ -36,7 +37,7 @@ class PeopleDriftRepository implements PeopleRepository {
 
   @override
   Future<bool> updatePeople({
-    required int account,
+    required Account account,
     required int id,
     String? address,
     String? email,
@@ -46,7 +47,7 @@ class PeopleDriftRepository implements PeopleRepository {
   }) async {
     try {
       final people = DriftPeopleCompanion(
-        accountId: Value(account),
+        accountId: Value(account.dbID),
         id: Value(id),
         address: Value(address),
         email: Value(email),

@@ -15,6 +15,7 @@ import 'package:pursenal/core/models/domain/wallet.dart';
 import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/balances_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/screens/account_entry_screen.dart';
 import 'package:pursenal/viewmodels/account_viewmodel.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
@@ -26,7 +27,7 @@ import 'package:pursenal/widgets/shared/loading_body.dart';
 import 'package:pursenal/widgets/shared/search_field.dart';
 import 'package:pursenal/widgets/shared/the_date_picker.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/widgets/shared/transactions_list.dart';
 import 'package:pursenal/widgets/shared/transactions_list_wide.dart';
 
@@ -48,17 +49,12 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balancesDriftRepository =
-        Provider.of<BalancesDriftRepository>(context, listen: false);
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
-    final transactionsDriftRepository =
-        Provider.of<TransactionsDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
 
     final appViewmodel = Provider.of<AppViewmodel>(context);
     return ChangeNotifierProvider<AccountViewmodel>(
-      create: (context) => AccountViewmodel(transactionsDriftRepository,
-          balancesDriftRepository, accountsDriftRepository,
+      create: (context) => AccountViewmodel(repositoryRegistry,
           profile: profile, account: account)
         ..init(),
       builder: (context, child) => Consumer<AccountViewmodel>(

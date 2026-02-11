@@ -2,9 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pursenal/utils/app_logger.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:path/path.dart' as p;
 import 'package:pursenal/utils/app_paths.dart';
+import 'package:pursenal/utils/image_resizer.dart';
 
 class ImagesSelector extends StatelessWidget {
   /// Field to select multiple images from the system
@@ -29,8 +30,11 @@ class ImagesSelector extends StatelessWidget {
     final String securePath = AppPaths.imagesDir;
     Future<void> pickImages() async {
       final ImagePicker picker = ImagePicker();
-      final List<XFile> pickedFiles = await picker.pickMultiImage();
-
+      List<XFile> pickedFiles = await picker.pickMultiImage();
+      pickedFiles = await compressAndResizeXFile(
+        pickedFiles,
+        maxWidth: 1080,
+      );
       if (pickedFiles.isNotEmpty) {
         for (XFile file in pickedFiles) {
           String fileName = file.name;
@@ -40,8 +44,9 @@ class ImagesSelector extends StatelessWidget {
             AppLogger.instance
                 .error("Cannot rename image $fileName", e.toString());
           }
-
           await File(file.path).copy(p.join(securePath, fileName));
+          // Delete the temp file because it is processed with image_resizer.dart
+          await File(file.path).delete();
           addPathFn(fileName);
         }
       }

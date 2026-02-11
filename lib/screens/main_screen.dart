@@ -1,21 +1,34 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/core/abstracts/accounts_repository.dart';
+import 'package:pursenal/core/abstracts/profiles_repository.dart';
+import 'package:pursenal/core/repositories/proto/projects_proto_repository.dart';
+import 'package:pursenal/core/repositories/proto/transactions_proto_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:pursenal/app/global/dimensions.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/user.dart';
+import 'package:pursenal/core/models/proto/models.pb.dart' as proto;
 import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/profiles_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/user_drift_repository.dart';
+import 'package:pursenal/providers/lan_server_provider.dart';
 import 'package:pursenal/screens/dashboard_screen.dart';
 import 'package:pursenal/screens/balances_screen.dart';
 import 'package:pursenal/screens/insights_screen.dart';
+import 'package:pursenal/screens/lan_devices_screen.dart';
+import 'package:pursenal/screens/lan_server_screen.dart';
 import 'package:pursenal/screens/transactions_screen.dart';
 import 'package:pursenal/screens/user_edit_screen.dart';
+import 'package:pursenal/utils/app_logger.dart';
 import 'package:pursenal/utils/app_paths.dart';
+import 'package:pursenal/utils/proto_http_client.dart';
+import 'package:pursenal/utils/services/lan_discovery.dart';
 import 'package:pursenal/viewmodels/main_viewmodel.dart';
 import 'package:pursenal/widgets/main/the_drawer.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
@@ -27,13 +40,14 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profilesDriftRepository =
-        Provider.of<ProfilesDriftRepository>(context, listen: false);
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
     final userRepository =
         Provider.of<UserDriftRepository>(context, listen: false);
+    final lanServerProvider =
+        Provider.of<LANServerProvider>(context, listen: false);
     const double barIconSize = 24.00;
+
+    final profileDriftRepository =
+        Provider.of<ProfilesDriftRepository>(context, listen: false);
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -43,9 +57,11 @@ class MainScreen extends StatelessWidget {
       ),
     );
 
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
     return ChangeNotifierProvider<MainViewmodel>(
       create: (context) => MainViewmodel(
-          profilesDriftRepository, accountsDriftRepository, userRepository,
+          repositoryRegistry, userRepository, profileDriftRepository,
           selectedProfile: profile)
         ..init(),
       builder: (context, child) => Consumer<MainViewmodel>(
@@ -62,6 +78,36 @@ class MainScreen extends StatelessWidget {
               appBar: AppBar(
                 title: Text(AppLocalizations.of(context)!.pursenal),
                 actions: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const LANDevicesScreen(),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.cast_connected_sharp,
+                        color: lanServerProvider.isRunning
+                            ? Theme.of(context).primaryColor
+                            : null,
+                      )),
+                  const SizedBox(width: 8),
+                  IconButton(
+                      onPressed: () async {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const LanServerScreen(),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.share_rounded,
+                        color: lanServerProvider.isRunning
+                            ? Theme.of(context).primaryColor
+                            : null,
+                      )),
+                  const SizedBox(width: 8),
                   Padding(
                     padding: const EdgeInsets.only(right: 2.0),
                     child: SizedBox(
@@ -134,6 +180,7 @@ class MainScreen extends StatelessWidget {
                                   const EdgeInsets.only(right: 10, top: 18),
                               child: Column(
                                 children: [
+                                  Text(lanServerProvider.serverAddress ?? ""),
                                   const SizedBox(
                                     height: 50,
                                   ),

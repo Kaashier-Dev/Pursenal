@@ -1,4 +1,7 @@
 import 'package:pursenal/core/enums/voucher_type.dart';
+import 'package:pursenal/core/models/domain/account.dart';
+import 'package:pursenal/core/models/domain/profile.dart';
+import 'package:pursenal/core/models/domain/project.dart';
 import 'package:pursenal/core/models/domain/transaction.dart';
 
 abstract class TransactionsRepository {
@@ -6,24 +9,24 @@ abstract class TransactionsRepository {
       {required DateTime vchDate,
       required String narr,
       required String refNo,
-      required int dr,
-      required int cr,
+      required Account dr,
+      required Account cr,
       required int amount,
       required VoucherType vchType,
-      required int profile,
-      int? project});
+      required Profile profile,
+      Project? project});
 
   Future<bool> updateTransaction(
       {required int id,
       required DateTime vchDate,
       required String narr,
       required String refNo,
-      required int dr,
-      required int cr,
+      required Account dr,
+      required Account cr,
       required int amount,
       required VoucherType vchType,
-      required int profile,
-      int? project});
+      required Profile profile,
+      Project? project});
 
   Future<int> delete(int id);
 

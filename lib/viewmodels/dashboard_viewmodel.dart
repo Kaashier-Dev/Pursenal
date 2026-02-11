@@ -10,6 +10,7 @@ import 'package:pursenal/core/abstracts/accounts_repository.dart';
 import 'package:pursenal/core/abstracts/balances_repository.dart';
 import 'package:pursenal/core/abstracts/profiles_repository.dart';
 import 'package:pursenal/core/abstracts/transactions_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,13 +22,15 @@ class DashboardViewmodel extends ChangeNotifier {
   final AccountTypesRepository _accountTypesRepository;
 
   DashboardViewmodel(
-      this._profilesRepository,
-      this._accountsRepository,
-      this._transactionsRepository,
-      this._balancesRepository,
-      this._accountTypesRepository,
+      RepositoryRegistry repositoryRegistry, this._profilesRepository,
       {required Profile profile})
-      : _selectedProfile = profile;
+      : _selectedProfile = profile,
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>(),
+        _transactionsRepository =
+            repositoryRegistry.get<TransactionsRepository>(),
+        _balancesRepository = repositoryRegistry.get<BalancesRepository>(),
+        _accountTypesRepository =
+            repositoryRegistry.get<AccountTypesRepository>();
 
   List<Profile> _profiles = [];
 

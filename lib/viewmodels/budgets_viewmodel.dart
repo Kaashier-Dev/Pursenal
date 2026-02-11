@@ -4,14 +4,16 @@ import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/models/domain/budget.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/abstracts/budgets_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
 class BudgetsViewmodel extends ChangeNotifier {
   final BudgetsRepository _budgetsRepository;
 
-  BudgetsViewmodel(this._budgetsRepository,
+  BudgetsViewmodel(RepositoryRegistry repositoryRegistry,
       {required Profile profile, int accTypeID = 4})
-      : _profile = profile;
+      : _profile = profile,
+        _budgetsRepository = repositoryRegistry.get<BudgetsRepository>();
 
   final Profile _profile;
   Profile get profile => _profile;

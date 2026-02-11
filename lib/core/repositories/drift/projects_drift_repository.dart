@@ -3,6 +3,8 @@ import 'package:pursenal/app/extensions/drift_models.dart';
 import 'package:pursenal/core/abstracts/projects_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
 import 'package:pursenal/core/enums/project_status.dart';
+import 'package:pursenal/core/models/domain/budget.dart';
+import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/project.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
@@ -14,8 +16,8 @@ class ProjectsDriftRepository implements ProjectsRepository {
   Future<int> insertProject({
     required String name,
     ProjectStatus projectStatus = ProjectStatus.pending,
-    required int profile,
-    int? budget,
+    required Profile profile,
+    Budget? budget,
     String? description,
     DateTime? startDate,
     DateTime? endDate,
@@ -25,10 +27,10 @@ class ProjectsDriftRepository implements ProjectsRepository {
         status: projectStatus,
         name: name,
         description: Value(description),
-        profile: profile,
+        profile: profile.dbID,
         startDate: Value(startDate),
         endDate: Value(endDate),
-        budget: Value(budget),
+        budget: Value(budget?.dbID),
       );
 
       final p = await db.insertProject(project);
@@ -43,9 +45,9 @@ class ProjectsDriftRepository implements ProjectsRepository {
   Future<bool> updateProject({
     required int id,
     required String name,
-    required int profile,
+    required Profile profile,
     ProjectStatus projectStatus = ProjectStatus.pending,
-    int? budget,
+    Budget? budget,
     String? description,
     DateTime? startDate,
     DateTime? endDate,
@@ -56,11 +58,11 @@ class ProjectsDriftRepository implements ProjectsRepository {
           id: Value(id),
           status: Value(projectStatus),
           name: Value(name),
-          profile: Value(profile),
+          profile: Value(profile.dbID),
           description: Value(description),
           startDate: Value(startDate),
           endDate: Value(endDate),
-          budget: Value(budget),
+          budget: Value(budget?.dbID),
           updateDate: Value(DateTime.now()));
 
       return await db.updateProject(project);
@@ -74,9 +76,9 @@ class ProjectsDriftRepository implements ProjectsRepository {
   Future<bool> updateProjectStatus({
     required int id,
     required String name,
-    required int profile,
+    required Profile profile,
     ProjectStatus projectStatus = ProjectStatus.pending,
-    int? budget,
+    Budget? budget,
     String? description,
     DateTime? startDate,
     DateTime? endDate,
@@ -86,11 +88,11 @@ class ProjectsDriftRepository implements ProjectsRepository {
           id: Value(id),
           status: Value(projectStatus),
           name: Value(name),
-          profile: Value(profile),
+          profile: Value(profile.dbID),
           description: Value(description),
           startDate: Value(startDate),
           endDate: Value(endDate),
-          budget: Value(budget),
+          budget: Value(budget?.dbID),
           updateDate: Value(DateTime.now()));
 
       return await db.updateProject(project);

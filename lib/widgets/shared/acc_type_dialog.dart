@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/core/models/domain/account_type.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/screens/account_entry_screen.dart';

@@ -4,7 +4,7 @@ import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/dashboard_viewmodel.dart';
 import 'package:pursenal/widgets/shared/transaction_options_dialog.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class AddTransactionButtonGroup extends StatelessWidget {
   const AddTransactionButtonGroup({

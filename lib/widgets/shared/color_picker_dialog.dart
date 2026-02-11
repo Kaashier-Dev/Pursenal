@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pursenal/app/global/colors.dart';
 import 'package:pursenal/app/global/dimensions.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class ColorPickerDialog extends StatelessWidget {
   /// Dialog that sets a material color

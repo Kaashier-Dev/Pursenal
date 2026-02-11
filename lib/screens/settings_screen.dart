@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/app/global/dimensions.dart';
 import 'package:pursenal/app/extensions/color.dart';
 import 'package:pursenal/core/enums/app_date_format.dart';

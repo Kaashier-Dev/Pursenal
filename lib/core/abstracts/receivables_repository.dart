@@ -1,13 +1,14 @@
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/receivable.dart';
 
 abstract class ReceivablesRepository {
   Future<int> insertReceivable({
-    required int account,
+    required Account account,
     DateTime? paidDate,
     int? paidAmount,
   });
   Future<bool> updateReceivable({
-    required int account,
+    required Account account,
     required int id,
     DateTime? paidDate,
     int? paidAmount,

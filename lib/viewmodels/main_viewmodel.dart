@@ -5,6 +5,8 @@ import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/abstracts/accounts_repository.dart';
 import 'package:pursenal/core/abstracts/profiles_repository.dart';
 import 'package:pursenal/core/models/domain/user.dart';
+import 'package:pursenal/core/repositories/drift/drift_repositories.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,11 +16,12 @@ class MainViewmodel extends ChangeNotifier {
   final UserRepository _userRepository;
 
   MainViewmodel(
-    this._profilesRepository,
-    this._accountsRepository,
-    this._userRepository, {
+    RepositoryRegistry repositoryRegistry,
+    this._userRepository,
+    this._profilesRepository, {
     required selectedProfile,
-  }) : _selectedProfile = selectedProfile;
+  })  : _selectedProfile = selectedProfile,
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>();
 
   List<Profile> _profiles = [];
 

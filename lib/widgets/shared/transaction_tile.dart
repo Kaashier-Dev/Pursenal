@@ -4,7 +4,7 @@ import 'package:pursenal/app/global/date_formats.dart';
 import 'package:pursenal/app/extensions/currency.dart';
 import 'package:pursenal/core/enums/currency.dart';
 import 'package:pursenal/core/enums/voucher_type.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 
 class TransactionTile extends StatelessWidget {

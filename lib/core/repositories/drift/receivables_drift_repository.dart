@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:pursenal/app/extensions/drift_models.dart';
 import 'package:pursenal/core/abstracts/receivables_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/receivable.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
@@ -11,13 +12,13 @@ class ReceivablesDriftRepository implements ReceivablesRepository {
 
   @override
   Future<int> insertReceivable({
-    required int account,
+    required Account account,
     DateTime? paidDate,
     int? paidAmount,
   }) async {
     try {
       final receivable = DriftReceivablesCompanion(
-        accountId: Value(account),
+        accountId: Value(account.dbID),
         paidDate: Value(paidDate),
         totalAmount: Value(paidAmount),
       );
@@ -30,14 +31,14 @@ class ReceivablesDriftRepository implements ReceivablesRepository {
 
   @override
   Future<bool> updateReceivable({
-    required int account,
+    required Account account,
     required int id,
     DateTime? paidDate,
     int? paidAmount,
   }) async {
     try {
       final receivable = DriftReceivablesCompanion(
-        accountId: Value(account),
+        accountId: Value(account.dbID),
         id: Value(id),
         paidDate: Value(paidDate),
         totalAmount: Value(paidAmount),

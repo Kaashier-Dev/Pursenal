@@ -5,6 +5,7 @@ import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/enums/payment_status.dart';
 import 'package:pursenal/core/models/domain/payment_reminder.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:pursenal/utils/services/notification_service.dart';
 
@@ -12,9 +13,11 @@ class PaymentRemindersViewmodel extends ChangeNotifier {
   final PaymentRemindersRepository _paymentRemindersRepository;
 
   PaymentRemindersViewmodel(
-    this._paymentRemindersRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
-  }) : _profile = profile;
+  })  : _profile = profile,
+        _paymentRemindersRepository =
+            repositoryRegistry.get<PaymentRemindersRepository>();
 
   bool isPayment = false;
 

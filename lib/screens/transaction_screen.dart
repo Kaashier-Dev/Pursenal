@@ -10,12 +10,13 @@ import 'package:pursenal/core/models/domain/transaction.dart';
 import 'package:pursenal/core/repositories/drift/balances_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/projects_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/screens/transaction_entry_screen.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/transaction_viewmodel.dart';
 import 'package:pursenal/widgets/shared/image_carousel.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class TransactionScreen extends StatelessWidget {
   const TransactionScreen({
@@ -28,17 +29,12 @@ class TransactionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final transactionsDriftRepository =
-        Provider.of<TransactionsDriftRepository>(context, listen: false);
-    final balancesDriftRepository =
-        Provider.of<BalancesDriftRepository>(context, listen: false);
-    final projectsDriftRepository =
-        Provider.of<ProjectsDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
 
     final appViewmodel = Provider.of<AppViewmodel>(context);
     return ChangeNotifierProvider<TransactionViewmodel>(
-      create: (context) => TransactionViewmodel(transactionsDriftRepository,
-          balancesDriftRepository, projectsDriftRepository,
+      create: (context) => TransactionViewmodel(repositoryRegistry,
           profile: profile, transaction: transaction)
         ..init(),
       child: Consumer<TransactionViewmodel>(

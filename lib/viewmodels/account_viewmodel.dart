@@ -7,6 +7,7 @@ import 'package:pursenal/core/models/domain/credit_card.dart';
 import 'package:pursenal/core/models/domain/loan.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/transaction.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/exporter.dart';
 import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/enums/voucher_type.dart';
@@ -23,13 +24,15 @@ class AccountViewmodel extends ChangeNotifier {
   final AccountsRepository _accountsRepository;
 
   AccountViewmodel(
-    this._transactionsRepository,
-    this._balancesRepository,
-    this._accountsRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
     required Account account,
   })  : _profile = profile,
-        _account = account;
+        _account = account,
+        _transactionsRepository =
+            repositoryRegistry.get<TransactionsRepository>(),
+        _balancesRepository = repositoryRegistry.get<BalancesRepository>(),
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>();
 
   Account _account;
   Account get account => _account;
@@ -142,7 +145,7 @@ class AccountViewmodel extends ChangeNotifier {
 
   getOpeningBalance() async {
     openBal = await _balancesRepository.getClosingBalance(
-        account: _account.dbID,
+        account: _account,
         closingDate: _startDate.subtract(const Duration(days: 1)));
     notifyListeners();
   }
@@ -150,7 +153,7 @@ class AccountViewmodel extends ChangeNotifier {
   getClosingBalance() async {
     try {
       closeBal = await _balancesRepository.getClosingBalance(
-          account: _account.dbID, closingDate: _endDate);
+          account: _account, closingDate: _endDate);
       notifyListeners();
     } catch (e) {
       AppLogger.instance.error(' ${e.toString()}');

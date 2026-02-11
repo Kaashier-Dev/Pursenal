@@ -19,12 +19,13 @@ import 'package:pursenal/core/repositories/drift/loans_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/people_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/receivables_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/wallets_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/account_entry_viewmodel.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/widgets/shared/calculated_field.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
 import 'package:pursenal/widgets/shared/the_date_picker.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class AccountEntryScreen extends StatelessWidget {
   const AccountEntryScreen(
@@ -35,36 +36,11 @@ class AccountEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletsDriftRepository =
-        Provider.of<WalletsDriftRepository>(context, listen: false);
-    final accountTypesDriftRepository =
-        Provider.of<AccountTypesDriftRepository>(context, listen: false);
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
-    final balancesDriftRepository =
-        Provider.of<BalancesDriftRepository>(context, listen: false);
-    final banksDriftRepository =
-        Provider.of<BanksDriftRepository>(context, listen: false);
-    final cCardsDriftRepository =
-        Provider.of<CCardsDriftRepository>(context, listen: false);
-    final loansDriftRepository =
-        Provider.of<LoansDriftRepository>(context, listen: false);
-    final peopleDriftRepository =
-        Provider.of<PeopleDriftRepository>(context, listen: false);
-    final receivablesDriftRepository =
-        Provider.of<ReceivablesDriftRepository>(context, listen: false);
-
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
     return ChangeNotifierProvider(
       create: (context) => AccountEntryViewModel(
-        walletsDriftRepository,
-        accountsDriftRepository,
-        accountTypesDriftRepository,
-        balancesDriftRepository,
-        loansDriftRepository,
-        cCardsDriftRepository,
-        banksDriftRepository,
-        peopleDriftRepository,
-        receivablesDriftRepository,
+        repositoryRegistry,
         profile: profile,
         account: account,
         accountType: accountType,

@@ -15,6 +15,7 @@ import 'package:pursenal/core/repositories/drift/loans_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/people_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/receivables_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/screens/account_entry_screen.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/balance_account_viewmodel.dart';
@@ -27,7 +28,7 @@ import 'package:pursenal/widgets/shared/loading_body.dart';
 import 'package:pursenal/widgets/shared/search_field.dart';
 import 'package:pursenal/widgets/shared/the_date_picker.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/widgets/shared/transactions_list.dart';
 import 'package:pursenal/widgets/shared/transactions_list_wide.dart';
 
@@ -42,36 +43,13 @@ class BalanceAccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final transactionsDriftRepository =
-        Provider.of<TransactionsDriftRepository>(context, listen: false);
-    final balancesDriftRepository =
-        Provider.of<BalancesDriftRepository>(context, listen: false);
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
-    final banksDriftRepository =
-        Provider.of<BanksDriftRepository>(context, listen: false);
-    final cCardsDriftRepository =
-        Provider.of<CCardsDriftRepository>(context, listen: false);
-    final loansDriftRepository =
-        Provider.of<LoansDriftRepository>(context, listen: false);
-    final receivablesDriftRepository =
-        Provider.of<ReceivablesDriftRepository>(context, listen: false);
-    final peopleDriftRepository =
-        Provider.of<PeopleDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
 
     final appViewmodel = Provider.of<AppViewmodel>(context);
     return ChangeNotifierProvider<BalanceAccountViewmodel>(
-      create: (context) => BalanceAccountViewmodel(
-          transactionsDriftRepository,
-          balancesDriftRepository,
-          accountsDriftRepository,
-          banksDriftRepository,
-          cCardsDriftRepository,
-          loansDriftRepository,
-          peopleDriftRepository,
-          receivablesDriftRepository,
-          profile: profile,
-          account: account)
+      create: (context) => BalanceAccountViewmodel(repositoryRegistry,
+          profile: profile, account: account)
         ..init(),
       builder: (context, child) => Consumer<BalanceAccountViewmodel>(
         builder: (context, viewmodel, child) => Scaffold(

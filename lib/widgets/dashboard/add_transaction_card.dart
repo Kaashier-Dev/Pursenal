@@ -6,7 +6,7 @@ import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/dashboard_viewmodel.dart';
 import 'package:pursenal/widgets/dashboard/add_transaction_button_group.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class AddTransactionCard extends StatelessWidget {
   const AddTransactionCard({

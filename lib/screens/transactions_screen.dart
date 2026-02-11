@@ -7,6 +7,7 @@ import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/transactions_viewmodel.dart';
 import 'package:pursenal/widgets/shared/empty_list.dart';
@@ -16,7 +17,7 @@ import 'package:pursenal/widgets/shared/loading_body.dart';
 import 'package:pursenal/widgets/shared/search_field.dart';
 import 'package:pursenal/widgets/shared/the_date_picker.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/widgets/shared/transactions_list.dart';
 import 'package:pursenal/widgets/shared/transactions_list_wide.dart';
 
@@ -26,20 +27,17 @@ class TransactionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final transactionsDriftRepository =
-        Provider.of<TransactionsDriftRepository>(context, listen: false);
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
 
     final appViewmodel = Provider.of<AppViewmodel>(context);
     return ChangeNotifierProvider<TransactionsViewmodel>(
-      create: (context) => TransactionsViewmodel(
-          transactionsDriftRepository, accountsDriftRepository,
-          profile: profile)
-        ..init(),
+      create: (context) =>
+          TransactionsViewmodel(repositoryRegistry, profile: profile)..init(),
       builder: (context, child) => Consumer<TransactionsViewmodel>(
         builder: (context, viewmodel, child) => Scaffold(
           body: LoadingBody(
+            isFirstScreen: true,
             feedbackText: viewmodel.feedbackText,
             loadingStatus: viewmodel.loadingStatus,
             errorText: viewmodel.errorText,

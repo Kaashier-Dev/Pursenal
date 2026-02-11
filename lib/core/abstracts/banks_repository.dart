@@ -1,8 +1,9 @@
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/bank.dart';
 
 abstract class BanksRepository {
   Future<int> insertBank({
-    required int account,
+    required Account account,
     required String? branch,
     required String? branchCode,
     required String? holderName,
@@ -12,7 +13,7 @@ abstract class BanksRepository {
 
   Future<bool> updateBank({
     required int id,
-    required int account,
+    required Account account,
     required String? branch,
     required String? branchCode,
     required String? accountNo,

@@ -3,6 +3,7 @@ import 'package:pursenal/app/extensions/drift_models.dart';
 import 'package:pursenal/core/abstracts/budgets_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
 import 'package:pursenal/core/enums/budget_interval.dart';
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/budget.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
@@ -51,7 +52,7 @@ class BudgetsDriftRepository implements BudgetsRepository {
   }
 
   @override
-  Future<int> insertBudget(String name, String details, List<int> funds,
+  Future<int> insertBudget(String name, String details, List<Account> funds,
       Map<int, int> accounts, BudgetInterval interval, int profile) async {
     try {
       DriftBudgetsCompanion b = DriftBudgetsCompanion.insert(
@@ -61,7 +62,7 @@ class BudgetsDriftRepository implements BudgetsRepository {
 
       for (var i in funds) {
         await db.insertBudgetFund(
-            DriftBudgetFundsCompanion.insert(account: i, budget: bId));
+            DriftBudgetFundsCompanion.insert(account: i.dbID, budget: bId));
       }
 
       accounts.forEach((k, v) async {
@@ -83,7 +84,7 @@ class BudgetsDriftRepository implements BudgetsRepository {
       int id,
       String name,
       String details,
-      List<int> funds,
+      List<Account> funds,
       Map<int, int> accounts,
       BudgetInterval interval,
       int profile) async {
@@ -102,7 +103,7 @@ class BudgetsDriftRepository implements BudgetsRepository {
 
       for (var i in funds) {
         await db.insertBudgetFund(
-            DriftBudgetFundsCompanion.insert(account: i, budget: id));
+            DriftBudgetFundsCompanion.insert(account: i.dbID, budget: id));
       }
 
       accounts.forEach((k, v) async {

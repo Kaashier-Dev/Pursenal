@@ -7,7 +7,7 @@ import 'package:pursenal/screens/account_entry_screen.dart';
 import 'package:pursenal/viewmodels/dashboard_viewmodel.dart';
 import 'package:pursenal/widgets/shared/acc_type_icon.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class AddNewAccountCard extends StatelessWidget {
   const AddNewAccountCard({

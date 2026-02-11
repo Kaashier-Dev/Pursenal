@@ -6,6 +6,7 @@ import 'package:pursenal/core/enums/budget_interval.dart';
 import 'package:pursenal/core/enums/payment_status.dart';
 import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/payment_reminder.dart';
+import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
 class PaymentRemindersDriftRepository implements PaymentRemindersRepository {
@@ -15,7 +16,7 @@ class PaymentRemindersDriftRepository implements PaymentRemindersRepository {
   @override
   Future<int> insertPaymentReminder({
     Account? account,
-    required int profile,
+    required Profile profile,
     PaymentStatus status = PaymentStatus.pending,
     required int amount,
     BudgetInterval? interval,
@@ -26,7 +27,7 @@ class PaymentRemindersDriftRepository implements PaymentRemindersRepository {
   }) async {
     try {
       final reminder = DriftPaymentRemindersCompanion.insert(
-        profile: profile,
+        profile: profile.dbID,
         status: status,
         account: Value(account?.dbID),
         amount: Value(amount),
@@ -49,7 +50,7 @@ class PaymentRemindersDriftRepository implements PaymentRemindersRepository {
   Future<bool> updatePaymentReminder({
     required int id,
     Account? account,
-    required int profile,
+    required Profile profile,
     PaymentStatus status = PaymentStatus.pending,
     required int amount,
     BudgetInterval? interval,
@@ -62,7 +63,7 @@ class PaymentRemindersDriftRepository implements PaymentRemindersRepository {
       db.deleteFilePathByParentID(id);
       final reminder = DriftPaymentRemindersCompanion(
         id: Value(id),
-        profile: Value(profile),
+        profile: Value(profile.dbID),
         status: Value(status),
         account: Value(account?.dbID),
         amount: Value(amount),
@@ -176,7 +177,7 @@ class PaymentRemindersDriftRepository implements PaymentRemindersRepository {
   Future<bool> updatePaymentReminderStatus({
     required int id,
     Account? account,
-    required int profile,
+    required Profile profile,
     PaymentStatus status = PaymentStatus.pending,
     required int amount,
     BudgetInterval? interval,
@@ -188,7 +189,7 @@ class PaymentRemindersDriftRepository implements PaymentRemindersRepository {
   }) async {
     final reminder = DriftPaymentRemindersCompanion(
       id: Value(id),
-      profile: Value(profile),
+      profile: Value(profile.dbID),
       status: Value(status),
       account: Value(account?.dbID),
       amount: Value(amount),

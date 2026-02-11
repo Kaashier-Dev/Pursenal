@@ -5,16 +5,20 @@ import 'package:pursenal/core/models/domain/ledger.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/abstracts/account_types_repository.dart';
 import 'package:pursenal/core/abstracts/accounts_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
 class AccountsViewmodel extends ChangeNotifier {
   final AccountsRepository _accountsRepository;
   final AccountTypesRepository _accountTypesRepository;
 
-  AccountsViewmodel(this._accountsRepository, this._accountTypesRepository,
+  AccountsViewmodel(RepositoryRegistry repositoryRegistry,
       {required Profile profile, int accTypeID = 4})
       : _profile = profile,
-        _accTypeID = accTypeID;
+        _accTypeID = accTypeID,
+        _accountTypesRepository =
+            repositoryRegistry.get<AccountTypesRepository>(),
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>();
 
   int _accTypeID;
 

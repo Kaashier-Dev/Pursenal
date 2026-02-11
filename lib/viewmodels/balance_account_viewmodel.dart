@@ -15,6 +15,7 @@ import 'package:pursenal/core/models/domain/people.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/receivable.dart';
 import 'package:pursenal/core/models/domain/transaction.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/exporter.dart';
 import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/enums/voucher_type.dart';
@@ -37,19 +38,21 @@ class BalanceAccountViewmodel extends ChangeNotifier with Exporter {
   final ReceivablesRepository _receivablesRepository;
 
   BalanceAccountViewmodel(
-    this._transactionsRepository,
-    this._balancesRepository,
-    this._accountsRepository,
-    this._banksRepository,
-    this._cardsRepository,
-    this._loansRepository,
-    this._peopleRepository,
-    this._receivablesRepository, {
+    RepositoryRegistry _repositoryRegistry, {
     required Profile profile,
     required Account account,
   })  : _profile = profile,
-        _account = account;
-
+        _account = account,
+        _transactionsRepository =
+            _repositoryRegistry.get<TransactionsRepository>(),
+        _balancesRepository = _repositoryRegistry.get<BalancesRepository>(),
+        _accountsRepository = _repositoryRegistry.get<AccountsRepository>(),
+        _banksRepository = _repositoryRegistry.get<BanksRepository>(),
+        _cardsRepository = _repositoryRegistry.get<CreditCardsRepository>(),
+        _loansRepository = _repositoryRegistry.get<LoansRepository>(),
+        _peopleRepository = _repositoryRegistry.get<PeopleRepository>(),
+        _receivablesRepository =
+            _repositoryRegistry.get<ReceivablesRepository>();
   Account _account;
   Account get account => _account;
 
@@ -207,14 +210,14 @@ class BalanceAccountViewmodel extends ChangeNotifier with Exporter {
 
   _getOpeningBalance() async {
     openBal = await _balancesRepository.getClosingBalance(
-        account: _account.dbID,
+        account: _account,
         closingDate: _startDate.subtract(const Duration(days: 1)));
     notifyListeners();
   }
 
   _getClosingBalance() async {
     closeBal = await _balancesRepository.getClosingBalance(
-        account: _account.dbID, closingDate: _endDate);
+        account: _account, closingDate: _endDate);
     notifyListeners();
   }
 

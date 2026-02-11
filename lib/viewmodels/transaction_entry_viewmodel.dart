@@ -17,6 +17,7 @@ import 'package:pursenal/core/abstracts/accounts_repository.dart';
 import 'package:pursenal/core/abstracts/balances_repository.dart';
 import 'package:pursenal/core/abstracts/projects_repository.dart';
 import 'package:pursenal/core/abstracts/transactions_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,12 +30,7 @@ class TransactionEntryViewmodel extends ChangeNotifier {
   final FilePathsRepository _filePathsRepository;
 
   TransactionEntryViewmodel(
-    this._accountsRepository,
-    this._transactionsRepository,
-    this._balancesRepository,
-    this._accountTypesRepository,
-    this._projectsRepository,
-    this._filePathsRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
     Transaction? transaction,
     Transaction? dupeTransaction,
@@ -43,6 +39,14 @@ class TransactionEntryViewmodel extends ChangeNotifier {
     VoucherType? vchType,
     int amount = 0,
   })  : _profile = profile,
+        _accountTypesRepository =
+            repositoryRegistry.get<AccountTypesRepository>(),
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>(),
+        _transactionsRepository =
+            repositoryRegistry.get<TransactionsRepository>(),
+        _balancesRepository = repositoryRegistry.get<BalancesRepository>(),
+        _projectsRepository = repositoryRegistry.get<ProjectsRepository>(),
+        _filePathsRepository = repositoryRegistry.get<FilePathsRepository>(),
         _transaction = transaction,
         _dupeTransaction = dupeTransaction,
         _selectedAccount = selectedAccount,
@@ -394,12 +398,12 @@ class TransactionEntryViewmodel extends ChangeNotifier {
               vchDate: _vchDate,
               narr: _narr,
               refNo: _refNo,
-              dr: isPayment ? _selectedAccount!.dbID : _selectedFund!.dbID,
-              cr: isPayment ? _selectedFund!.dbID : _selectedAccount!.dbID,
+              dr: isPayment ? _selectedAccount! : _selectedFund!,
+              cr: isPayment ? _selectedFund! : _selectedAccount!,
               amount: _amount,
               vchType: _vchType,
-              project: _selectedProject?.dbID,
-              profile: _profile.dbID);
+              project: _selectedProject,
+              profile: _profile);
 
           await _filePathsRepository
               .deleteFilePathByParentID(transaction!.dbID);
@@ -415,12 +419,12 @@ class TransactionEntryViewmodel extends ChangeNotifier {
               vchDate: _vchDate,
               narr: _narr,
               refNo: _refNo,
-              dr: isPayment ? _selectedAccount!.dbID : _selectedFund!.dbID,
-              cr: isPayment ? _selectedFund!.dbID : _selectedAccount!.dbID,
+              dr: isPayment ? _selectedAccount! : _selectedFund!,
+              cr: isPayment ? _selectedFund! : _selectedAccount!,
               amount: _amount,
               vchType: _vchType,
-              project: _selectedProject?.dbID,
-              profile: _profile.dbID);
+              project: _selectedProject,
+              profile: _profile);
           for (String p in _images) {
             await _filePathsRepository.insertFilePath(
                 path: p,
@@ -453,11 +457,11 @@ class TransactionEntryViewmodel extends ChangeNotifier {
     try {
       if (_selectedAccount != null && _selectedFund != null) {
         await _balancesRepository.updateBalanceByAccount(
-          account: _selectedFund!.dbID,
+          account: _selectedFund!,
         );
 
         await _balancesRepository.updateBalanceByAccount(
-          account: _selectedAccount!.dbID,
+          account: _selectedAccount!,
         );
       }
     } catch (e) {

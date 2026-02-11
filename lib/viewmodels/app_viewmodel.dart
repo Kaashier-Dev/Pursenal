@@ -1,22 +1,40 @@
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pursenal/app/extensions/color.dart';
 import 'package:pursenal/app/global/date_formats.dart';
+import 'package:pursenal/app/global/values.dart';
+import 'package:pursenal/app/global/values.dart' as values;
 import 'package:pursenal/core/abstracts/database_repository.dart';
 import 'package:pursenal/core/enums/app_date_format.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
+import 'package:pursenal/core/models/domain/user.dart';
+import 'package:pursenal/core/models/domain/user_device.dart';
+import 'package:pursenal/core/repositories/drift/drift_repositories.dart';
+import 'package:pursenal/utils/app_paths.dart';
+import 'package:pursenal/utils/image_resizer.dart';
 import 'package:pursenal/utils/services/notification_service.dart';
 import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/abstracts/profiles_repository.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:path/path.dart' as p;
 
 class AppViewmodel extends ChangeNotifier {
   final ProfilesRepository _profilesRepository;
   final DatabaseRepository _databaseRepository;
+  final UserDriftRepository _userDriftRepository;
 
-  AppViewmodel(this._profilesRepository, this._databaseRepository);
+  final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+
+  AppViewmodel(this._profilesRepository, this._databaseRepository,
+      this._userDriftRepository);
+
+  static const uuid = Uuid();
 
   Profile? _selectedProfile;
 
@@ -44,6 +62,9 @@ class AppViewmodel extends ChangeNotifier {
   TimeOfDay paymentReminderTimeStamp = const TimeOfDay(hour: 8, minute: 0);
 
   DateFormat dateFormat = DateFormat(AppDateFormat.date1.pattern);
+
+  String _deviceID = "";
+  String get deviceID => _deviceID;
 
   set receiptColor(Color value) {
     try {
@@ -73,6 +94,7 @@ class AppViewmodel extends ChangeNotifier {
       notifyListeners();
       _profiles = await _profilesRepository.getAll();
       _selectedProfile = await _profilesRepository.getSelectedProfile();
+
       loadingStatus = LoadingStatus.completed;
 
       _prefs = await SharedPreferences.getInstance();
@@ -122,6 +144,33 @@ class AppViewmodel extends ChangeNotifier {
   void setSytemDefaultThemeSP() {
     _prefs?.setBool('isSystemDefaultTheme', _isSystemDefaultTheme);
     notifyListeners();
+  }
+
+  Future<void> setDeviceID() async {
+    try {
+      if (_deviceID.isNotEmpty) {
+        return;
+      }
+      _deviceID = uuid.v4();
+
+      await _prefs?.setString('pursenalAppDeviceID', _deviceID);
+    } catch (e) {
+      AppLogger.instance.error("Error setting device ID ${e.toString()}");
+    }
+  }
+
+  Future<String?> getDeviceID() async {
+    try {
+      String? id = _prefs?.getString('pursenalAppDeviceID');
+      if (id == null || id.isEmpty) {
+        await setDeviceID();
+        id = _prefs?.getString('pursenalAppDeviceID');
+      }
+      return id;
+    } catch (e) {
+      AppLogger.instance.error("Error selecting device ID ${e.toString()}");
+      return null;
+    }
   }
 
   Future<int?> getActiveProfileID() async {
@@ -310,6 +359,40 @@ class AppViewmodel extends ChangeNotifier {
     } catch (e) {
       AppLogger.instance.error("Error importing database ${e.toString()}");
       return "Error imrporting database";
+    }
+  }
+
+  Future<UserDevice> getUserDeviceInfo() async {
+    try {
+      final deviceID = await getDeviceID();
+      if (deviceID == null) {
+        throw Exception("Device ID is null");
+      }
+      final deviceInfo = await deviceInfoPlugin.deviceInfo;
+      final user = await _userDriftRepository.getById(0);
+      final userPhoto = user.photoPath;
+      const appVersion = values.appVersion;
+      if (deviceInfo.data.isNotEmpty) {
+        Uint8List? photoBytes;
+        if (userPhoto != null && userPhoto.isNotEmpty) {
+          photoBytes =
+              await File(p.join(AppPaths.imagesDir, userPhoto)).readAsBytes();
+          photoBytes = resizeTo64(photoBytes);
+        }
+        return UserDevice(
+          deviceID: deviceID,
+          appVersion: appVersion,
+          name: user.name,
+          osVersion: deviceInfo.data['version.release'] ?? 'Unknown',
+          photo: photoBytes,
+          platform: deviceInfo.data['name'] ?? 'Unknown',
+        );
+      } else {
+        throw Exception("Device info is empty");
+      }
+    } catch (e) {
+      AppLogger.instance.error(' ${e.toString()}');
+      rethrow;
     }
   }
 }

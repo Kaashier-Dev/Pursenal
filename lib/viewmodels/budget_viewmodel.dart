@@ -12,6 +12,7 @@ import 'package:pursenal/core/models/domain/transaction.dart';
 import 'package:pursenal/core/abstracts/accounts_repository.dart';
 import 'package:pursenal/core/abstracts/budgets_repository.dart';
 import 'package:pursenal/core/abstracts/transactions_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
 class BudgetViewmodel extends ChangeNotifier {
@@ -20,14 +21,15 @@ class BudgetViewmodel extends ChangeNotifier {
   final TransactionsRepository _transactionsRepository;
 
   BudgetViewmodel(
-    this._accountsRepository,
-    this._budgetsRepository,
-    this._transactionsRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
     required Budget budget,
   })  : _profile = profile,
-        _budget = budget;
-
+        _budget = budget,
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>(),
+        _budgetsRepository = repositoryRegistry.get<BudgetsRepository>(),
+        _transactionsRepository =
+            repositoryRegistry.get<TransactionsRepository>();
   LoadingStatus loadingStatus = LoadingStatus.idle;
 
   Budget _budget;

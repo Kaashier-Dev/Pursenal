@@ -19,6 +19,7 @@ import 'package:pursenal/core/repositories/drift/balances_drift_repository.dart'
 import 'package:pursenal/core/repositories/drift/file_paths_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/projects_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/transaction_entry_viewmodel.dart';
 import 'package:pursenal/widgets/shared/acc_type_dialog.dart';
@@ -27,7 +28,7 @@ import 'package:pursenal/widgets/shared/calculated_field.dart';
 import 'package:pursenal/widgets/shared/images_selector.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
 import 'package:pursenal/widgets/shared/the_date_picker.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class TransactionEntryScreen extends StatelessWidget {
   const TransactionEntryScreen(
@@ -49,27 +50,11 @@ class TransactionEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
-    final transactionsDriftRepository =
-        Provider.of<TransactionsDriftRepository>(context, listen: false);
-    final balancesDriftRepository =
-        Provider.of<BalancesDriftRepository>(context, listen: false);
-    final accountTypesDriftRepository =
-        Provider.of<AccountTypesDriftRepository>(context, listen: false);
-    final projectsDriftRepository =
-        Provider.of<ProjectsDriftRepository>(context, listen: false);
-    final filePathsDriftRepository =
-        Provider.of<FilePathsDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
 
     return ChangeNotifierProvider<TransactionEntryViewmodel>(
-      create: (context) => TransactionEntryViewmodel(
-          accountsDriftRepository,
-          transactionsDriftRepository,
-          balancesDriftRepository,
-          accountTypesDriftRepository,
-          projectsDriftRepository,
-          filePathsDriftRepository,
+      create: (context) => TransactionEntryViewmodel(repositoryRegistry,
           transaction: transaction,
           profile: profile,
           selectedAccount: selectedAccount,

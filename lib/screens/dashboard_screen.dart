@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:pursenal/app/global/dimensions.dart';
+import 'package:pursenal/core/abstracts/account_types_repository.dart';
+import 'package:pursenal/core/abstracts/accounts_repository.dart';
+import 'package:pursenal/core/abstracts/balances_repository.dart';
+import 'package:pursenal/core/abstracts/profiles_repository.dart';
+import 'package:pursenal/core/abstracts/transactions_repository.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/repositories/drift/account_types_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/balances_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/profiles_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/screens/accounts_screen.dart';
 import 'package:pursenal/screens/budgets_screen.dart';
 import 'package:pursenal/screens/payment_reminders_screen.dart';
@@ -20,7 +26,7 @@ import 'package:pursenal/widgets/dashboard/my_balance_card.dart';
 import 'package:pursenal/widgets/dashboard/transactions_card.dart';
 import 'package:pursenal/widgets/dashboard/nav_button1.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key, required this.profile});
@@ -28,25 +34,15 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profilesDriftRepository =
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
+    final profileDriftRepository =
         Provider.of<ProfilesDriftRepository>(context, listen: false);
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
-    final transactionsDriftRepository =
-        Provider.of<TransactionsDriftRepository>(context, listen: false);
-    final balancesDriftRepository =
-        Provider.of<BalancesDriftRepository>(context, listen: false);
-    final accountTypesDriftRepository =
-        Provider.of<AccountTypesDriftRepository>(context, listen: false);
 
     final appViewmodel = Provider.of<AppViewmodel>(context);
     return ChangeNotifierProvider<DashboardViewmodel>(
       create: (context) => DashboardViewmodel(
-          profilesDriftRepository,
-          accountsDriftRepository,
-          transactionsDriftRepository,
-          balancesDriftRepository,
-          accountTypesDriftRepository,
+          repositoryRegistry, profileDriftRepository,
           profile: profile)
         ..init(),
       builder: (context, child) => Consumer<DashboardViewmodel>(
@@ -57,6 +53,7 @@ class DashboardScreen extends StatelessWidget {
           return Scaffold(
             body: LoadingBody(
               loadingStatus: viewmodel.loadingStatus,
+              isFirstScreen: true,
               errorText: viewmodel.errorText,
               widget: SingleChildScrollView(
                 child: Column(

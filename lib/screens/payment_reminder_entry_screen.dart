@@ -17,6 +17,7 @@ import 'package:pursenal/core/repositories/drift/account_types_drift_repository.
 import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/file_paths_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/payment_reminders_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/payment_reminder_entry_viewmodel.dart';
 import 'package:pursenal/widgets/shared/acc_type_dialog.dart';
@@ -24,7 +25,7 @@ import 'package:pursenal/widgets/shared/accounts_search_dialog.dart';
 import 'package:pursenal/widgets/shared/calculated_field.dart';
 import 'package:pursenal/widgets/shared/images_selector.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/widgets/shared/the_date_picker.dart';
 
 class PaymentReminderEntryScreen extends StatelessWidget {
@@ -38,23 +39,11 @@ class PaymentReminderEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final paymentRemindersDriftRepository =
-        Provider.of<PaymentRemindersDriftRepository>(context, listen: false);
-
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
-
-    final accountTypesDriftRepository =
-        Provider.of<AccountTypesDriftRepository>(context, listen: false);
-
-    final filePathsDriftRepository =
-        Provider.of<FilePathsDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
     return ChangeNotifierProvider(
       create: (context) => PaymentReminderEntryViewmodel(
-        paymentRemindersDriftRepository,
-        accountsDriftRepository,
-        filePathsDriftRepository,
-        accountTypesDriftRepository,
+        repositoryRegistry,
         reminder: paymentReminder,
         profile: profile,
       )..init(),

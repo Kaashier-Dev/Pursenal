@@ -6,7 +6,7 @@ import 'package:pursenal/app/global/values.dart';
 import 'package:pursenal/app/extensions/currency.dart';
 import 'package:pursenal/app/extensions/datetime.dart';
 import 'package:pursenal/core/enums/voucher_type.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/transaction.dart';

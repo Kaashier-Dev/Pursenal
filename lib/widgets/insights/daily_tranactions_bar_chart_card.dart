@@ -9,7 +9,7 @@ import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/insights_viewmodel.dart';
 import 'package:pursenal/widgets/shared/dot_indicator.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class DailyTransactionsBarChartCard extends StatelessWidget {
   const DailyTransactionsBarChartCard({

@@ -7,6 +7,7 @@ import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/budgets_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/screens/budget_entry_screen.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/budget_viewmodel.dart';
@@ -16,7 +17,7 @@ import 'package:pursenal/widgets/budget/budgeted_expenses_card.dart';
 import 'package:pursenal/widgets/budget/income_vs_expense_card.dart';
 import 'package:pursenal/widgets/shared/acc_type_icon.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class BudgetScreen extends StatelessWidget {
   const BudgetScreen({super.key, required this.profile, required this.budget});
@@ -25,19 +26,14 @@ class BudgetScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
-    final budgetsDriftRepository =
-        Provider.of<BudgetsDriftRepository>(context, listen: false);
-    final transactionsDriftRepository =
-        Provider.of<TransactionsDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
 
     final appViewmodel = Provider.of<AppViewmodel>(context);
     return ChangeNotifierProvider<BudgetViewmodel>(
-      create: (context) => BudgetViewmodel(accountsDriftRepository,
-          budgetsDriftRepository, transactionsDriftRepository,
-          profile: profile, budget: budget)
-        ..init(),
+      create: (context) =>
+          BudgetViewmodel(repositoryRegistry, profile: profile, budget: budget)
+            ..init(),
       builder: (context, child) => Consumer<BudgetViewmodel>(
         builder: (context, viewmodel, child) => Scaffold(
             appBar: AppBar(

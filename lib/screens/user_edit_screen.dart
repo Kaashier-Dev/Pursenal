@@ -7,10 +7,11 @@ import 'package:pursenal/core/models/domain/user.dart';
 import 'package:pursenal/core/repositories/drift/user_drift_repository.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:pursenal/utils/app_paths.dart';
+import 'package:pursenal/utils/image_resizer.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/user_viewmodel.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:path/path.dart' as p;
 
 class UserEditScreen extends StatelessWidget {
@@ -45,8 +46,12 @@ class UserEditScreen extends StatelessWidget {
 
           Future<void> pickImage(ImageSource imgSource) async {
             final ImagePicker picker = ImagePicker();
-            final XFile? file = await picker.pickImage(source: imgSource);
+            XFile? file = await picker.pickImage(source: imgSource);
             if (file != null) {
+              file = (await compressAndResizeXFile([file],
+                      maxWidth: 512, quality: 70))
+                  .first;
+
               String fileName = file.name;
               try {
                 fileName = AppPaths.uniqueFileName(fileName);

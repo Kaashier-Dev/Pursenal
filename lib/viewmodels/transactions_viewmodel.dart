@@ -4,6 +4,7 @@ import 'package:pursenal/app/extensions/datetime.dart';
 import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/transaction.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/exporter.dart';
 import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/enums/voucher_type.dart';
@@ -18,10 +19,12 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
   final AccountsRepository _accountsRepository;
 
   TransactionsViewmodel(
-    this._transactionsRepository,
-    this._accountsRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
-  }) : _profile = profile;
+  })  : _profile = profile,
+        _transactionsRepository =
+            repositoryRegistry.get<TransactionsRepository>(),
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>();
 
   LoadingStatus loadingStatus = LoadingStatus.idle;
   LoadingStatus searchLoadingStatus = LoadingStatus.idle;

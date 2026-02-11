@@ -8,7 +8,7 @@ import 'package:pursenal/screens/settings_screen.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/main_viewmodel.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TheDrawer extends StatelessWidget {

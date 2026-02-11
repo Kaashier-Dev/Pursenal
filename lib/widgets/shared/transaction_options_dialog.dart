@@ -9,7 +9,7 @@ import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/ledger.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/screens/transaction_entry_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/widgets/shared/search_field.dart';
 

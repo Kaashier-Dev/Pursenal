@@ -7,6 +7,7 @@ import 'package:pursenal/core/models/domain/project.dart';
 import 'package:pursenal/core/models/domain/transaction.dart';
 import 'package:pursenal/core/abstracts/projects_repository.dart';
 import 'package:pursenal/core/abstracts/transactions_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:pursenal/utils/exporter.dart';
 
@@ -40,11 +41,13 @@ class ProjectViewmodel extends ChangeNotifier {
   String feedbackText = "";
 
   ProjectViewmodel(
-    this._projectsRepository,
-    this._transactionsRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required this.projectID,
     required Profile profile,
-  }) : _profile = profile;
+  })  : _profile = profile,
+        _projectsRepository = repositoryRegistry.get<ProjectsRepository>(),
+        _transactionsRepository =
+            repositoryRegistry.get<TransactionsRepository>();
 
   init() async {
     try {
@@ -114,7 +117,7 @@ class ProjectViewmodel extends ChangeNotifier {
         _projectsRepository.updateProjectStatus(
             id: p.dbID,
             name: p.name,
-            profile: _profile.dbID,
+            profile: _profile,
             description: p.description,
             endDate: p.endDate,
             startDate: p.startDate,

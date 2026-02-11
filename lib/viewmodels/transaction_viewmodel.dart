@@ -6,6 +6,7 @@ import 'package:pursenal/core/models/domain/transaction.dart';
 import 'package:pursenal/core/abstracts/balances_repository.dart';
 import 'package:pursenal/core/abstracts/projects_repository.dart';
 import 'package:pursenal/core/abstracts/transactions_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,14 +16,15 @@ class TransactionViewmodel extends ChangeNotifier {
   final ProjectsRepository _projectsRepository;
 
   TransactionViewmodel(
-    this._transactionsRepository,
-    this._balancesRepository,
-    this._projectsRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
     required Transaction transaction,
   })  : _profile = profile,
-        _transaction = transaction;
-
+        _transaction = transaction,
+        _transactionsRepository =
+            repositoryRegistry.get<TransactionsRepository>(),
+        _balancesRepository = repositoryRegistry.get<BalancesRepository>(),
+        _projectsRepository = repositoryRegistry.get<ProjectsRepository>();
   Transaction _transaction;
   Transaction get transaction => _transaction;
 
@@ -60,9 +62,9 @@ class TransactionViewmodel extends ChangeNotifier {
     try {
       await _transactionsRepository.delete(_transaction.dbID);
       await _balancesRepository.updateBalanceByAccount(
-          account: _transaction.crAccount.dbID);
+          account: _transaction.crAccount);
       await _balancesRepository.updateBalanceByAccount(
-          account: _transaction.drAccount.dbID);
+          account: _transaction.drAccount);
       notifyListeners();
       await setLastUpdatedTimeStamp();
       return true;

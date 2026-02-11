@@ -8,6 +8,7 @@ import 'package:pursenal/core/enums/voucher_type.dart';
 import 'package:pursenal/core/models/domain/payment_reminder.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/repositories/drift/payment_reminders_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/screens/payment_reminder_entry_screen.dart';
 import 'package:pursenal/screens/transaction_entry_screen.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
@@ -16,7 +17,7 @@ import 'package:pursenal/widgets/shared/empty_list.dart';
 import 'package:pursenal/widgets/shared/image_carousel.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
 import 'package:pursenal/widgets/shared/search_field.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
 
 class PaymentRemindersScreen extends StatelessWidget {
@@ -25,12 +26,12 @@ class PaymentRemindersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final paymentRemindersDriftRepository =
-        Provider.of<PaymentRemindersDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
 
     return ChangeNotifierProvider<PaymentRemindersViewmodel>(
       create: (context) => PaymentRemindersViewmodel(
-        paymentRemindersDriftRepository,
+        repositoryRegistry,
         profile: profile,
       )..init(),
       builder: (context, child) => Consumer<PaymentRemindersViewmodel>(

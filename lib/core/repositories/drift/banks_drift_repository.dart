@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:pursenal/app/extensions/drift_models.dart';
 import 'package:pursenal/core/abstracts/banks_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/bank.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
@@ -11,7 +12,7 @@ class BanksDriftRepository implements BanksRepository {
 
   @override
   Future<int> insertBank(
-      {required int account,
+      {required Account account,
       required String? branch,
       required String? branchCode,
       required String? holderName,
@@ -19,7 +20,7 @@ class BanksDriftRepository implements BanksRepository {
       required String? institution}) async {
     try {
       final bank = DriftBanksCompanion(
-        account: Value(account),
+        account: Value(account.dbID),
         accountNo: Value(accountNo),
         branch: Value(branch),
         branchCode: Value(branchCode),
@@ -36,7 +37,7 @@ class BanksDriftRepository implements BanksRepository {
   @override
   Future<bool> updateBank(
       {required int id,
-      required int account,
+      required Account account,
       required String? branch,
       required String? branchCode,
       required String? accountNo,
@@ -45,7 +46,7 @@ class BanksDriftRepository implements BanksRepository {
     try {
       final bank = DriftBanksCompanion(
         id: Value(id),
-        account: Value(account),
+        account: Value(account.dbID),
         accountNo: Value(accountNo),
         branch: Value(branch),
         branchCode: Value(branchCode),

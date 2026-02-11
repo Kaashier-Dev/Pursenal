@@ -1,12 +1,14 @@
 import 'package:pursenal/core/enums/project_status.dart';
+import 'package:pursenal/core/models/domain/budget.dart';
+import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/project.dart';
 
 abstract class ProjectsRepository {
   Future<int> insertProject({
     required String name,
     ProjectStatus projectStatus = ProjectStatus.pending,
-    required int profile,
-    int? budget,
+    required Profile profile,
+    Budget? budget,
     String? description,
     DateTime? startDate,
     DateTime? endDate,
@@ -15,9 +17,9 @@ abstract class ProjectsRepository {
   Future<bool> updateProject({
     required int id,
     required String name,
-    required int profile,
+    required Profile profile,
     ProjectStatus projectStatus = ProjectStatus.pending,
-    int? budget,
+    Budget? budget,
     String? description,
     DateTime? startDate,
     DateTime? endDate,
@@ -26,9 +28,9 @@ abstract class ProjectsRepository {
   Future<bool> updateProjectStatus({
     required int id,
     required String name,
-    required int profile,
+    required Profile profile,
     ProjectStatus projectStatus = ProjectStatus.pending,
-    int? budget,
+    Budget? budget,
     String? description,
     DateTime? startDate,
     DateTime? endDate,

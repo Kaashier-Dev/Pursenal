@@ -8,6 +8,7 @@ import 'package:pursenal/core/models/domain/budget.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/abstracts/accounts_repository.dart';
 import 'package:pursenal/core/abstracts/budgets_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
 class BudgetEntryViewmodel extends ChangeNotifier {
@@ -15,12 +16,13 @@ class BudgetEntryViewmodel extends ChangeNotifier {
   final BudgetsRepository _budgetsRepository;
 
   BudgetEntryViewmodel(
-    this._accountsRepository,
-    this._budgetsRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
     Budget? budget,
   })  : _profile = profile,
-        _budget = budget;
+        _budget = budget,
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>(),
+        _budgetsRepository = repositoryRegistry.get<BudgetsRepository>();
 
   LoadingStatus loadingStatus = LoadingStatus.idle;
 
@@ -246,12 +248,14 @@ class BudgetEntryViewmodel extends ChangeNotifier {
           Map.from(selectedExpenses.map((k, v) => MapEntry(k, -v)));
       acc.addAll(selectedIncomes);
 
+      final f = funds.where((a) => selectedFunds.contains(a.dbID)).toList();
+
       if (_budget == null) {
-        await _budgetsRepository.insertBudget(name, details,
-            selectedFunds.toList(), acc, interval, _profile.dbID);
+        await _budgetsRepository.insertBudget(
+            name, details, f, acc, interval, _profile.dbID);
       } else {
-        await _budgetsRepository.updateBudget(_budget!.dbID, name, details,
-            selectedFunds.toList(), acc, interval, _profile.dbID);
+        await _budgetsRepository.updateBudget(
+            _budget!.dbID, name, details, f, acc, interval, _profile.dbID);
       }
 
       loadingStatus = LoadingStatus.submitted;

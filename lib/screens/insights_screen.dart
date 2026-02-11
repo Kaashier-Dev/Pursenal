@@ -10,6 +10,7 @@ import 'package:pursenal/core/repositories/drift/balances_drift_repository.dart'
 import 'package:pursenal/core/repositories/drift/budgets_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/profiles_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/insights_viewmodel.dart';
 import 'package:pursenal/widgets/insights/average_transactions_bar_chart_card.dart';
@@ -17,7 +18,7 @@ import 'package:pursenal/widgets/insights/daily_tranactions_bar_chart_card.dart'
 import 'package:pursenal/widgets/insights/expenses_split_pie_chart_card.dart';
 import 'package:pursenal/widgets/insights/fund_balances_line_chart_card.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/widgets/shared/the_date_picker.dart';
 
 class InsightsScreen extends StatelessWidget {
@@ -29,28 +30,20 @@ class InsightsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final profilesDriftRepository =
         Provider.of<ProfilesDriftRepository>(context, listen: false);
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
-    final transactionsDriftRepository =
-        Provider.of<TransactionsDriftRepository>(context, listen: false);
-    final balancesDriftRepository =
-        Provider.of<BalancesDriftRepository>(context, listen: false);
-    final budgetsDriftRepository =
-        Provider.of<BudgetsDriftRepository>(context, listen: false);
+
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
 
     return Scaffold(
       body: ChangeNotifierProvider(
         create: (context) => InsightsViewmodel(
-            profilesDriftRepository,
-            accountsDriftRepository,
-            transactionsDriftRepository,
-            balancesDriftRepository,
-            budgetsDriftRepository,
+            repositoryRegistry, profilesDriftRepository,
             profile: profile)
           ..init(),
         builder: (context, child) => Consumer<InsightsViewmodel>(
           builder: (context, viewmodel, child) => LoadingBody(
               loadingStatus: viewmodel.loadingStatus,
+              isFirstScreen: true,
               resetErrorTextFn: () {
                 viewmodel.resetErrorText();
               },

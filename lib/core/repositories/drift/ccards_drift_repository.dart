@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:pursenal/app/extensions/drift_models.dart';
 import 'package:pursenal/core/abstracts/credit_cards_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/credit_card.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
@@ -11,7 +12,7 @@ class CCardsDriftRepository implements CreditCardsRepository {
 
   @override
   Future<int> insertCCard({
-    required int account,
+    required Account account,
     required String? institution,
     required String? cardNetwork,
     required String? cardNo,
@@ -19,7 +20,7 @@ class CCardsDriftRepository implements CreditCardsRepository {
   }) async {
     try {
       final card = DriftCCardsCompanion(
-        account: Value(account),
+        account: Value(account.dbID),
         institution: Value(institution),
         cardNetwork: Value(cardNetwork),
         cardNo: Value(cardNo),
@@ -35,7 +36,7 @@ class CCardsDriftRepository implements CreditCardsRepository {
   @override
   Future<bool> updateCCard({
     required int id,
-    required int account,
+    required Account account,
     required String? institution,
     required String? cardNetwork,
     required String? cardNo,
@@ -44,7 +45,7 @@ class CCardsDriftRepository implements CreditCardsRepository {
     try {
       final card = DriftCCardsCompanion(
         id: Value(id),
-        account: Value(account),
+        account: Value(account.dbID),
         institution: Value(institution),
         cardNetwork: Value(cardNetwork),
         cardNo: Value(cardNo),

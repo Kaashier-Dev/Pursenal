@@ -14,6 +14,7 @@ import 'package:pursenal/core/models/domain/account_type.dart';
 import 'package:pursenal/core/models/domain/ledger.dart';
 import 'package:pursenal/core/models/domain/payment_reminder.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:pursenal/utils/services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,15 +26,17 @@ class PaymentReminderEntryViewmodel extends ChangeNotifier {
   final FilePathsRepository _filePathsRepository;
 
   PaymentReminderEntryViewmodel(
-    this._paymentRemindersRepository,
-    this._accountsRepository,
-    this._filePathsRepository,
-    this._accountTypesRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
     PaymentReminder? reminder,
   })  : _profile = profile,
-        _reminder = reminder;
-
+        _reminder = reminder,
+        _paymentRemindersRepository =
+            repositoryRegistry.get<PaymentRemindersRepository>(),
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>(),
+        _filePathsRepository = repositoryRegistry.get<FilePathsRepository>(),
+        _accountTypesRepository =
+            repositoryRegistry.get<AccountTypesRepository>();
   final Profile _profile;
   PaymentReminder? _reminder;
 
@@ -288,7 +291,7 @@ class PaymentReminderEntryViewmodel extends ChangeNotifier {
       final isNew = _reminder == null;
       final reminderId = isNew
           ? await _paymentRemindersRepository.insertPaymentReminder(
-              profile: _profile.dbID,
+              profile: _profile,
               account: _account,
               fund: _fund,
               interval: _interval,
@@ -304,7 +307,7 @@ class PaymentReminderEntryViewmodel extends ChangeNotifier {
         await _filePathsRepository.deleteFilePathByParentID(reminderId);
         await _paymentRemindersRepository.updatePaymentReminder(
           id: reminderId,
-          profile: _profile.dbID,
+          profile: _profile,
           account: _account,
           fund: _fund,
           interval: _interval,

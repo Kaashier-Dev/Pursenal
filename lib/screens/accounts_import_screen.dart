@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:pursenal/app/global/default_accounts.dart';
 import 'package:pursenal/app/global/dimensions.dart';
@@ -24,18 +25,12 @@ class AccountsImportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
-    final walletsDriftRepository =
-        Provider.of<WalletsDriftRepository>(context, listen: false);
-    final balancesDriftRepository =
-        Provider.of<BalancesDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
 
     return ChangeNotifierProvider<AccountsImportViewmodel>(
       create: (context) => AccountsImportViewmodel(
-        accountsDriftRepository,
-        walletsDriftRepository,
-        balancesDriftRepository,
+        repositoryRegistry,
         profile: profile,
       )..init(),
       child: Scaffold(

@@ -144,7 +144,7 @@ class ThemeProvider extends ChangeNotifier {
       cardColor: grey100,
       dividerColor: transparent,
       fontFamily: _selectedFont,
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: grey100,
         elevation: 1,
         shape: RoundedRectangleBorder(
@@ -233,9 +233,9 @@ class ThemeProvider extends ChangeNotifier {
         shape: const RoundedRectangleBorder(),
       ),
       expansionTileTheme: ExpansionTileThemeData(
-        expansionAnimationStyle: AnimationStyle(
+        expansionAnimationStyle: const AnimationStyle(
           curve: Curves.easeInOut,
-          duration: const Duration(milliseconds: 350),
+          duration: Duration(milliseconds: 350),
           reverseCurve: Curves.easeInOut,
         ),
         shape: RoundedRectangleBorder(
@@ -309,7 +309,7 @@ class ThemeProvider extends ChangeNotifier {
       cardColor: grey800,
       dividerColor: transparent,
       fontFamily: _selectedFont,
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: grey800,
         elevation: 1,
         shape: RoundedRectangleBorder(
@@ -329,7 +329,7 @@ class ThemeProvider extends ChangeNotifier {
       ),
       // AppBar Theme
       appBarTheme: AppBarTheme(
-        color: transparent,
+        backgroundColor: transparent,
         iconTheme: IconThemeData(color: grey100),
         titleTextStyle: TextStyle(
           color: grey100,
@@ -404,9 +404,9 @@ class ThemeProvider extends ChangeNotifier {
         shape: const RoundedRectangleBorder(),
       ),
       expansionTileTheme: ExpansionTileThemeData(
-        expansionAnimationStyle: AnimationStyle(
+        expansionAnimationStyle: const AnimationStyle(
           curve: Curves.easeInOut,
-          duration: const Duration(milliseconds: 350),
+          duration: Duration(milliseconds: 350),
           reverseCurve: Curves.easeInOut,
         ),
         shape: RoundedRectangleBorder(

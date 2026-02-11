@@ -7,7 +7,7 @@ import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/viewmodels/budget_viewmodel.dart';
 import 'package:pursenal/widgets/shared/progress_bar.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class BudgetedExpensesCard extends StatelessWidget {
   const BudgetedExpensesCard({

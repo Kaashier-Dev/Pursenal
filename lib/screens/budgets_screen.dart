@@ -7,13 +7,14 @@ import 'package:pursenal/app/extensions/currency.dart';
 import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/repositories/drift/budgets_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/screens/budget_entry_screen.dart';
 import 'package:pursenal/screens/budget_screen.dart';
 import 'package:pursenal/viewmodels/budgets_viewmodel.dart';
 import 'package:pursenal/widgets/shared/empty_list.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
 import 'package:pursenal/widgets/shared/search_field.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
 
 class BudgetsScreen extends StatelessWidget {
@@ -27,11 +28,11 @@ class BudgetsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final budgetsDriftRepository =
-        Provider.of<BudgetsDriftRepository>(context, listen: false);
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
     return ChangeNotifierProvider<BudgetsViewmodel>(
       create: (context) => BudgetsViewmodel(
-        budgetsDriftRepository,
+        repositoryRegistry,
         profile: profile,
       )..init(),
       builder: (context, child) => Scaffold(

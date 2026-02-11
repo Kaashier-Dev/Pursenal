@@ -1,8 +1,9 @@
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/loan.dart';
 
 abstract class LoansRepository {
   Future<int> insertLoan(
-      {required int account,
+      {required Account account,
       required String? institution,
       required String? accountNo,
       required String? agreementNo,
@@ -11,7 +12,7 @@ abstract class LoansRepository {
       required DateTime? endDate});
   Future<bool> updateLoan(
       {required int id,
-      required int account,
+      required Account account,
       required String? institution,
       required String? accountNo,
       required String? agreementNo,

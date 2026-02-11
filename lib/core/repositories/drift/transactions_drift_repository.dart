@@ -3,6 +3,9 @@ import 'package:pursenal/app/extensions/drift_models.dart';
 import 'package:pursenal/core/abstracts/transactions_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
 import 'package:pursenal/core/enums/voucher_type.dart';
+import 'package:pursenal/core/models/domain/account.dart';
+import 'package:pursenal/core/models/domain/profile.dart';
+import 'package:pursenal/core/models/domain/project.dart';
 import 'package:pursenal/core/models/domain/transaction.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
@@ -15,23 +18,23 @@ class TransactionsDriftRepository implements TransactionsRepository {
       {required DateTime vchDate,
       required String narr,
       required String refNo,
-      required int dr,
-      required int cr,
+      required Account dr,
+      required Account cr,
       required int amount,
       required VoucherType vchType,
-      required int profile,
-      int? project}) async {
+      required Profile profile,
+      Project? project}) async {
     try {
       final transaction = DriftTransactionsCompanion(
           vchDate: Value(vchDate),
           narr: Value(narr),
           refNo: Value(refNo),
-          dr: Value(dr),
-          cr: Value(cr),
-          project: Value(project),
+          dr: Value(dr.dbID),
+          cr: Value(cr.dbID),
+          project: Value(project?.dbID),
           amount: Value(amount),
           vchType: Value(vchType),
-          profile: Value(profile));
+          profile: Value(profile.dbID));
       AppLogger.instance.info("Inserting transaction");
       return await db.insertTransaction(transaction);
     } catch (e) {
@@ -46,24 +49,24 @@ class TransactionsDriftRepository implements TransactionsRepository {
       required DateTime vchDate,
       required String narr,
       required String refNo,
-      required int dr,
-      required int cr,
+      required Account dr,
+      required Account cr,
       required int amount,
       required VoucherType vchType,
-      required int profile,
-      int? project}) async {
+      required Profile profile,
+      Project? project}) async {
     try {
       final transaction = DriftTransactionsCompanion(
           id: Value(id),
           vchDate: Value(vchDate),
           narr: Value(narr),
           refNo: Value(refNo),
-          dr: Value(dr),
-          cr: Value(cr),
+          dr: Value(dr.dbID),
+          cr: Value(cr.dbID),
           amount: Value(amount),
           vchType: Value(vchType),
-          profile: Value(profile),
-          project: Value(project),
+          profile: Value(profile.dbID),
+          project: Value(project?.dbID),
           updateDate: Value(DateTime.now()));
       AppLogger.instance.info("Updating transaction id: $id");
       return await db.updateTransaction(transaction);

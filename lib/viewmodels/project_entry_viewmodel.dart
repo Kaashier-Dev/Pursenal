@@ -8,6 +8,7 @@ import 'package:pursenal/core/models/domain/budget.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/project.dart';
 import 'package:pursenal/core/abstracts/projects_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
 class ProjectEntryViewmodel extends ChangeNotifier {
@@ -15,12 +16,13 @@ class ProjectEntryViewmodel extends ChangeNotifier {
   final FilePathsRepository _filePathsRepository;
 
   ProjectEntryViewmodel(
-    this._projectsRepository,
-    this._filePathsRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
     Project? project,
   })  : _project = project,
-        _profile = profile;
+        _profile = profile,
+        _projectsRepository = repositoryRegistry.get<ProjectsRepository>(),
+        _filePathsRepository = repositoryRegistry.get<FilePathsRepository>();
   LoadingStatus loadingStatus = LoadingStatus.idle;
   final Profile _profile;
   Project? _project;
@@ -173,8 +175,8 @@ class ProjectEntryViewmodel extends ChangeNotifier {
       if (_project == null) {
         int newPro = await _projectsRepository.insertProject(
             name: _projectName,
-            budget: _budget?.dbID,
-            profile: _profile.dbID,
+            budget: _budget,
+            profile: _profile,
             description: _description,
             startDate: _startDate,
             endDate: _endDate,
@@ -187,10 +189,10 @@ class ProjectEntryViewmodel extends ChangeNotifier {
       } else {
         await _filePathsRepository.deleteFilePathByParentID(_project!.dbID);
         await _projectsRepository.updateProject(
-            profile: _profile.dbID,
+            profile: _profile,
             id: _project!.dbID,
             name: _projectName,
-            budget: _budget?.dbID,
+            budget: _budget,
             description: _description,
             startDate: _startDate,
             endDate: _endDate,

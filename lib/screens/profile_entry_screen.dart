@@ -9,7 +9,7 @@ import 'package:pursenal/core/repositories/drift/profiles_drift_repository.dart'
 import 'package:pursenal/screens/accounts_import_screen.dart';
 import 'package:pursenal/viewmodels/profile_entry_viewmodel.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class ProfileEntryScreen extends StatelessWidget {
   const ProfileEntryScreen({

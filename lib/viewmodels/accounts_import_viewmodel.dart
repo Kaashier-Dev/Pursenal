@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:pursenal/app/global/default_accounts.dart';
 import 'package:pursenal/core/enums/loading_status.dart';
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/abstracts/accounts_repository.dart';
 import 'package:pursenal/core/abstracts/balances_repository.dart';
 import 'package:pursenal/core/abstracts/wallets_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,10 +15,12 @@ class AccountsImportViewmodel extends ChangeNotifier {
   final WalletsRepository _walletsRepository;
   final BalancesRepository _balancesRepository;
 
-  AccountsImportViewmodel(this._accountsRepository, this._walletsRepository,
-      this._balancesRepository,
+  AccountsImportViewmodel(RepositoryRegistry repositoryRegistry,
       {required Profile profile})
-      : _profile = profile;
+      : _profile = profile,
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>(),
+        _walletsRepository = repositoryRegistry.get<WalletsRepository>(),
+        _balancesRepository = repositoryRegistry.get<BalancesRepository>();
   SharedPreferences? _prefs;
   Future<void> init() async {
     try {
@@ -112,9 +116,10 @@ class AccountsImportViewmodel extends ChangeNotifier {
             openDate: now.copyWith(month: 1, day: 1),
             accType: 0,
             profile: _profile.dbID);
+        Account acc = await _accountsRepository.getById(ac);
         await _balancesRepository.insertBalance(
-            account: ac, amount: cashOpenBalance);
-        await _walletsRepository.insertWallet(account: ac);
+            account: acc, amount: cashOpenBalance);
+        await _walletsRepository.insertWallet(account: acc);
 
         await _accountsRepository.insertAccountsBulk(
             selectedExpense.toList(), 5, _profile.dbID, accountOpenDate);

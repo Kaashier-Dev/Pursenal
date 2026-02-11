@@ -21,6 +21,7 @@ import 'package:pursenal/core/abstracts/banks_repository.dart';
 import 'package:pursenal/core/abstracts/loans_repository.dart';
 import 'package:pursenal/core/abstracts/people_repository.dart';
 import 'package:pursenal/core/abstracts/receivables_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,19 +37,22 @@ class AccountEntryViewModel extends ChangeNotifier {
   final ReceivablesRepository _receivablesRepository;
 
   AccountEntryViewModel(
-    this._walletsRepository,
-    this._accountsRepository,
-    this._accountTypesRepository,
-    this._balancesRepository,
-    this._loansRepository,
-    this._cCardsRepository,
-    this._banksRepository,
-    this._peopleRepository,
-    this._receivablesRepository, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
     AccountType? accountType,
     Account? account,
   })  : _profile = profile,
+        _walletsRepository = repositoryRegistry.get<WalletsRepository>(),
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>(),
+        _accountTypesRepository =
+            repositoryRegistry.get<AccountTypesRepository>(),
+        _balancesRepository = repositoryRegistry.get<BalancesRepository>(),
+        _loansRepository = repositoryRegistry.get<LoansRepository>(),
+        _cCardsRepository = repositoryRegistry.get<CreditCardsRepository>(),
+        _banksRepository = repositoryRegistry.get<BanksRepository>(),
+        _peopleRepository = repositoryRegistry.get<PeopleRepository>(),
+        _receivablesRepository =
+            repositoryRegistry.get<ReceivablesRepository>(),
         _accountType = accountType,
         _account = account;
 
@@ -590,19 +594,19 @@ class AccountEntryViewModel extends ChangeNotifier {
                     id: _account!.dbID)
                 ? _account!.dbID
                 : null;
-
+        _account = await _accountsRepository.getById(accId!);
         if (accId != null) {
           if (_accountType!.dbID == walletTypeID) {
             if (_wallet == null) {
-              _walletsRepository.insertWallet(account: accId);
+              _walletsRepository.insertWallet(account: _account!);
             } else {
               _walletsRepository.updateWallet(
-                  id: _wallet!.dbID, account: accId);
+                  id: _wallet!.dbID, account: _account!);
             }
           } else if (_accountType!.dbID == bankTypeID) {
             if (_bank == null) {
               _banksRepository.insertBank(
-                  account: accId,
+                  account: _account!,
                   branch: _branch,
                   accountNo: _accountNo,
                   branchCode: _branchCode,
@@ -611,7 +615,7 @@ class AccountEntryViewModel extends ChangeNotifier {
             } else {
               _banksRepository.updateBank(
                   id: _bank!.dbID,
-                  account: accId,
+                  account: _account!,
                   accountNo: _accountNo,
                   branch: _branch,
                   branchCode: _branchCode,
@@ -621,7 +625,7 @@ class AccountEntryViewModel extends ChangeNotifier {
           } else if (_accountType!.dbID == cCardTypeID) {
             if (_card == null) {
               _cCardsRepository.insertCCard(
-                  account: accId,
+                  account: _account!,
                   cardNetwork: _cardNetwork,
                   cardNo: _cardNo,
                   institution: _institution,
@@ -629,7 +633,7 @@ class AccountEntryViewModel extends ChangeNotifier {
             } else {
               _cCardsRepository.updateCCard(
                   id: _card!.dbID,
-                  account: accId,
+                  account: _account!,
                   cardNetwork: _cardNetwork,
                   cardNo: _cardNo,
                   institution: _institution,
@@ -638,7 +642,7 @@ class AccountEntryViewModel extends ChangeNotifier {
           } else if (_accountType!.dbID == loanTypeID) {
             if (_loan == null) {
               _loansRepository.insertLoan(
-                account: accId,
+                account: _account!,
                 institution: _institution,
                 accountNo: _accountNo,
                 agreementNo: _agreementNo,
@@ -649,7 +653,7 @@ class AccountEntryViewModel extends ChangeNotifier {
             } else {
               _loansRepository.updateLoan(
                 id: _loan!.dbID,
-                account: accId,
+                account: _account!,
                 institution: _institution,
                 accountNo: _accountNo,
                 agreementNo: _agreementNo,
@@ -661,7 +665,7 @@ class AccountEntryViewModel extends ChangeNotifier {
           } else if (_accountType!.dbID == peopleTypeID) {
             if (_people == null) {
               _peopleRepository.insertPeople(
-                  account: accId,
+                  account: _account!,
                   address: _address,
                   email: _email,
                   phone: _phone,
@@ -670,7 +674,7 @@ class AccountEntryViewModel extends ChangeNotifier {
             } else {
               _peopleRepository.updatePeople(
                   id: _people!.dbID,
-                  account: accId,
+                  account: _account!,
                   address: _address,
                   email: _email,
                   phone: _phone,
@@ -680,13 +684,13 @@ class AccountEntryViewModel extends ChangeNotifier {
           } else if (_accountType!.dbID == advanceTypeID) {
             if (_receivable == null) {
               _receivablesRepository.insertReceivable(
-                  account: accId,
+                  account: _account!,
                   paidAmount: _totalAmount,
                   paidDate: _paidDate);
             } else {
               _receivablesRepository.updateReceivable(
                   id: _receivable!.dbID,
-                  account: accId,
+                  account: _account!,
                   paidAmount: _totalAmount,
                   paidDate: _paidDate);
             }
@@ -694,11 +698,11 @@ class AccountEntryViewModel extends ChangeNotifier {
 
           if (_account != null) {
             await _balancesRepository.updateBalanceByAccount(
-              account: accId,
+              account: _account!,
             );
           } else {
             await _balancesRepository.insertBalance(
-                account: accId, amount: _openBal);
+                account: _account!, amount: _openBal);
           }
         }
         loadingStatus = LoadingStatus.submitted;

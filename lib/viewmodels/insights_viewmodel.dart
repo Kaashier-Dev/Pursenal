@@ -17,6 +17,7 @@ import 'package:pursenal/core/abstracts/balances_repository.dart';
 import 'package:pursenal/core/abstracts/budgets_repository.dart';
 import 'package:pursenal/core/abstracts/profiles_repository.dart';
 import 'package:pursenal/core/abstracts/transactions_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
 class InsightsViewmodel extends ChangeNotifier {
@@ -27,13 +28,14 @@ class InsightsViewmodel extends ChangeNotifier {
   final BudgetsRepository _budgetsRepository;
 
   InsightsViewmodel(
-      this._profilesRepository,
-      this._accountsRepository,
-      this._transactionsRepository,
-      this._balancesRepository,
-      this._budgetsRepository,
+      RepositoryRegistry repositoryRegistry, this._profilesRepository,
       {required Profile profile})
-      : _selectedProfile = profile;
+      : _selectedProfile = profile,
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>(),
+        _transactionsRepository =
+            repositoryRegistry.get<TransactionsRepository>(),
+        _balancesRepository = repositoryRegistry.get<BalancesRepository>(),
+        _budgetsRepository = repositoryRegistry.get<BudgetsRepository>();
 
   List<Profile> _profiles = [];
 
@@ -398,7 +400,7 @@ class InsightsViewmodel extends ChangeNotifier {
     for (var d in _rangeDates) {
       for (var f in _funds) {
         fundBalances[f]?.add(await _balancesRepository.getClosingBalance(
-            account: f.dbID, closingDate: d));
+            account: f, closingDate: d));
       }
     }
 

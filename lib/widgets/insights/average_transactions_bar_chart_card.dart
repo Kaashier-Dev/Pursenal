@@ -6,7 +6,7 @@ import 'package:pursenal/app/global/dimensions.dart';
 import 'package:pursenal/core/enums/week_days.dart';
 import 'package:pursenal/viewmodels/insights_viewmodel.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class AverageTransactionsBarChartCard extends StatelessWidget {
   const AverageTransactionsBarChartCard({

@@ -8,10 +8,11 @@ import 'package:pursenal/core/models/domain/budget.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/budgets_drift_repository.dart';
+import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/budget_entry_viewmodel.dart';
 import 'package:pursenal/widgets/shared/calculated_field.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 
 class BudgetEntryScreen extends StatelessWidget {
   const BudgetEntryScreen({super.key, required this.profile, this.budget});
@@ -21,14 +22,10 @@ class BudgetEntryScreen extends StatelessWidget {
   final Budget? budget;
   @override
   Widget build(BuildContext context) {
-    final accountsDriftRepository =
-        Provider.of<AccountsDriftRepository>(context, listen: false);
-    final budgetsDriftRepository =
-        Provider.of<BudgetsDriftRepository>(context, listen: false);
-
+    final repositoryRegistry =
+        Provider.of<RepositoryRegistry>(context, listen: false);
     return ChangeNotifierProvider<BudgetEntryViewmodel>(
-      create: (context) => BudgetEntryViewmodel(
-          accountsDriftRepository, budgetsDriftRepository,
+      create: (context) => BudgetEntryViewmodel(repositoryRegistry,
           profile: profile, budget: budget)
         ..init(),
       child: Consumer<BudgetEntryViewmodel>(

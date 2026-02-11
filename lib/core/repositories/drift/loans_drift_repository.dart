@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:pursenal/app/extensions/drift_models.dart';
 import 'package:pursenal/core/abstracts/loans_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
+import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/loan.dart';
 import 'package:pursenal/utils/app_logger.dart';
 
@@ -11,7 +12,7 @@ class LoansDriftRepository implements LoansRepository {
 
   @override
   Future<int> insertLoan(
-      {required int account,
+      {required Account account,
       required String? institution,
       required String? accountNo,
       required String? agreementNo,
@@ -20,7 +21,7 @@ class LoansDriftRepository implements LoansRepository {
       required DateTime? endDate}) async {
     try {
       final loan = DriftLoansCompanion(
-          account: Value(account),
+          account: Value(account.dbID),
           institution: Value(institution),
           accountNo: Value(accountNo),
           agreementNo: Value(agreementNo),
@@ -37,7 +38,7 @@ class LoansDriftRepository implements LoansRepository {
   @override
   Future<bool> updateLoan(
       {required int id,
-      required int account,
+      required Account account,
       required String? institution,
       required String? accountNo,
       required String? agreementNo,
@@ -47,7 +48,7 @@ class LoansDriftRepository implements LoansRepository {
     try {
       final loan = DriftLoansCompanion(
         id: Value(id),
-        account: Value(account),
+        account: Value(account.dbID),
         institution: Value(institution),
         accountNo: Value(accountNo),
         agreementNo: Value(agreementNo),

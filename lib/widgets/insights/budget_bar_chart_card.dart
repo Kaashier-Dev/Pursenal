@@ -5,7 +5,7 @@ import 'package:pursenal/app/global/dimensions.dart';
 import 'package:pursenal/app/extensions/currency.dart';
 import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/viewmodels/insights_viewmodel.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:pursenal/widgets/shared/progress_bar.dart';
 import 'package:pursenal/widgets/shared/the_divider.dart';
 
