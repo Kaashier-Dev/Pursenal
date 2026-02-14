@@ -118,7 +118,7 @@ class MainViewmodel extends ChangeNotifier {
 
   void getUser() async {
     try {
-      user = await _userRepository.getById(1);
+      user = await _userRepository.getUser();
       notifyListeners();
     } catch (e) {
       AppLogger.instance.error(' ${e.toString()}');

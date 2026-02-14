@@ -366,7 +366,7 @@ class AppViewmodel extends ChangeNotifier {
         throw Exception("Device ID is null");
       }
       final deviceInfo = await deviceInfoPlugin.deviceInfo;
-      final user = await _userDriftRepository.getById(0);
+      final user = await _userDriftRepository.getUser();
       final userPhoto = user.photoPath;
       const appVersion = values.appVersion;
       if (deviceInfo.data.isNotEmpty) {

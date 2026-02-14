@@ -71,38 +71,41 @@ class MainScreen extends StatelessWidget {
                         height: 36,
                         child: Hero(
                           tag: "user_photo",
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(4),
-                            customBorder: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4)),
-                            onTap: () {
-                              if (user != null) {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => UserEditScreen(
-                                        user: user,
+                          child: Material(
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(4),
+                              customBorder: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4)),
+                              onTap: () {
+                                if (user != null) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UserEditScreen(
+                                          user: user,
+                                        ),
+                                      )).then((_) {
+                                    viewmodel.init();
+                                  });
+                                }
+                              },
+                              child: user != null &&
+                                      userPhotoPath.isNotEmpty &&
+                                      userPhotoPath != "" &&
+                                      File(userPhotoPath).existsSync()
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: Image.file(
+                                        File(userPhotoPath),
+                                        width: 36,
+                                        height: 36,
+                                        fit: BoxFit.cover,
+                                        opacity:
+                                            const AlwaysStoppedAnimation(.9),
                                       ),
-                                    )).then((_) {
-                                  viewmodel.init();
-                                });
-                              }
-                            },
-                            child: user != null &&
-                                    userPhotoPath.isNotEmpty &&
-                                    userPhotoPath != "" &&
-                                    File(userPhotoPath).existsSync()
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(4),
-                                    child: Image.file(
-                                      File(userPhotoPath),
-                                      width: 36,
-                                      height: 36,
-                                      fit: BoxFit.cover,
-                                      opacity: const AlwaysStoppedAnimation(.9),
-                                    ),
-                                  )
-                                : const Icon(Icons.person),
+                                    )
+                                  : const Icon(Icons.person),
+                            ),
                           ),
                         )),
                   ),

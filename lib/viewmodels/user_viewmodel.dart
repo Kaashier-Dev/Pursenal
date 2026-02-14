@@ -74,7 +74,7 @@ class UserViewmodel extends ChangeNotifier {
   Future<void> refetchUser() async {
     try {
       loadingStatus = LoadingStatus.loading;
-      _user = await _userRepository.getById(_user.dbID);
+      _user = await _userRepository.getUser();
       notifyListeners();
       loadingStatus = LoadingStatus.completed;
     } catch (e) {

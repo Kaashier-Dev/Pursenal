@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:pursenal/app/extensions/drift_models.dart';
 import 'package:pursenal/core/abstracts/user_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
 import 'package:pursenal/core/models/domain/user.dart';
@@ -9,10 +10,9 @@ class UserDriftRepository implements UserRepository {
   final AppDriftDatabase db;
 
   @override
-  Future<User> getById(int id) async {
+  Future<User> getUser() async {
     try {
-      return User(
-          dbID: 0, name: "name", deviceID: "deviceID", photoPath: "photoPath");
+      return (await db.getUser()).toDomain();
     } catch (e) {
       AppLogger.instance.error("Failed to get user. ${e.toString()}");
       rethrow;

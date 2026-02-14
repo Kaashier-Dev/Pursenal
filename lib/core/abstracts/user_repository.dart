@@ -10,5 +10,5 @@ abstract class UserRepository {
       required String name,
       required String deviceID,
       required String filePath});
-  Future<User> getById(int id);
+  Future<User> getUser();
 }

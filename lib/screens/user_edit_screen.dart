@@ -60,7 +60,7 @@ class UserEditScreen extends StatelessWidget {
                     .error("Cannot rename image $fileName", e.toString());
               }
               // Move the selected image to a secure directory
-              deleteImage(p.join(securePath, p.basename(viewmodel.photoPath)));
+              await deleteImage(p.join(securePath, viewmodel.photoPath));
               await File(file.path).copy(p.join(securePath, fileName));
               viewmodel.photoPath = fileName;
             }

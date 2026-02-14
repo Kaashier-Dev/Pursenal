@@ -1413,6 +1413,8 @@ class AppDriftDatabase extends _$AppDriftDatabase {
   Future<DriftUser> getUserById(int id) =>
       (select(driftUsers)..where((t) => t.id.equals(id))).getSingle();
 
+  Future<DriftUser> getUser() => (select(driftUsers)).getSingle();
+
   Future<int> deleteFilePathByParentID(int id) async {
     final fps = await (select(driftFilePaths)
           ..where((t) => t.parentTable.equals(id)))

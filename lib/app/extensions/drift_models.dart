@@ -376,7 +376,7 @@ extension PaymentReminderEntityMapper on PaymentReminder {
 }
 
 extension UserMapper on DriftUser {
-  User toDomain(Account account) {
+  User toDomain() {
     return User(
       dbID: id,
       name: name,
