@@ -1,17 +1,13 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pursenal/core/abstracts/accounts_repository.dart';
-import 'package:pursenal/core/abstracts/profiles_repository.dart';
 import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:pursenal/app/global/dimensions.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/user.dart';
-import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/profiles_drift_repository.dart';
 import 'package:pursenal/core/repositories/drift/user_drift_repository.dart';
 import 'package:pursenal/screens/dashboard_screen.dart';
@@ -19,7 +15,6 @@ import 'package:pursenal/screens/balances_screen.dart';
 import 'package:pursenal/screens/insights_screen.dart';
 import 'package:pursenal/screens/transactions_screen.dart';
 import 'package:pursenal/screens/user_edit_screen.dart';
-import 'package:pursenal/utils/app_logger.dart';
 import 'package:pursenal/utils/app_paths.dart';
 import 'package:pursenal/viewmodels/main_viewmodel.dart';
 import 'package:pursenal/widgets/main/the_drawer.dart';

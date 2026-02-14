@@ -6,7 +6,6 @@ import 'package:pursenal/app/global/dimensions.dart';
 import 'package:pursenal/app/extensions/currency.dart';
 import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
-import 'package:pursenal/core/repositories/drift/budgets_drift_repository.dart';
 import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/screens/budget_entry_screen.dart';
 import 'package:pursenal/screens/budget_screen.dart';

@@ -1,13 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:pursenal/core/abstracts/abstract_repositories.dart';
-import 'package:pursenal/core/abstracts/profiles_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
 import 'package:pursenal/core/repositories/drift/drift_repositories.dart';
 import 'package:pursenal/providers/profile_provider.dart';
 
 class RepositoryRegistry {
   final AppDriftDatabase _database;
-  final ProfileProvider _profileProvider;
 
   // Cache for repository instances
   final Map<Type, dynamic> _driftCache = {};
@@ -16,8 +13,7 @@ class RepositoryRegistry {
   RepositoryRegistry({
     required AppDriftDatabase database,
     required ProfileProvider profileProvider,
-  })  : _database = database,
-        _profileProvider = profileProvider {}
+  }) : _database = database {}
 
   /// Get repository based on current profile
   T get<T>() {

@@ -7,7 +7,6 @@ import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/enums/voucher_type.dart';
 import 'package:pursenal/core/models/domain/payment_reminder.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
-import 'package:pursenal/core/repositories/drift/payment_reminders_drift_repository.dart';
 import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/screens/payment_reminder_entry_screen.dart';
 import 'package:pursenal/screens/transaction_entry_screen.dart';

@@ -5,7 +5,6 @@ import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/abstracts/accounts_repository.dart';
 import 'package:pursenal/core/abstracts/profiles_repository.dart';
 import 'package:pursenal/core/models/domain/user.dart';
-import 'package:pursenal/core/repositories/drift/drift_repositories.dart';
 import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';

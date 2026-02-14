@@ -38,21 +38,21 @@ class BalanceAccountViewmodel extends ChangeNotifier with Exporter {
   final ReceivablesRepository _receivablesRepository;
 
   BalanceAccountViewmodel(
-    RepositoryRegistry _repositoryRegistry, {
+    RepositoryRegistry repositoryRegistry, {
     required Profile profile,
     required Account account,
   })  : _profile = profile,
         _account = account,
         _transactionsRepository =
-            _repositoryRegistry.get<TransactionsRepository>(),
-        _balancesRepository = _repositoryRegistry.get<BalancesRepository>(),
-        _accountsRepository = _repositoryRegistry.get<AccountsRepository>(),
-        _banksRepository = _repositoryRegistry.get<BanksRepository>(),
-        _cardsRepository = _repositoryRegistry.get<CreditCardsRepository>(),
-        _loansRepository = _repositoryRegistry.get<LoansRepository>(),
-        _peopleRepository = _repositoryRegistry.get<PeopleRepository>(),
+            repositoryRegistry.get<TransactionsRepository>(),
+        _balancesRepository = repositoryRegistry.get<BalancesRepository>(),
+        _accountsRepository = repositoryRegistry.get<AccountsRepository>(),
+        _banksRepository = repositoryRegistry.get<BanksRepository>(),
+        _cardsRepository = repositoryRegistry.get<CreditCardsRepository>(),
+        _loansRepository = repositoryRegistry.get<LoansRepository>(),
+        _peopleRepository = repositoryRegistry.get<PeopleRepository>(),
         _receivablesRepository =
-            _repositoryRegistry.get<ReceivablesRepository>();
+            repositoryRegistry.get<ReceivablesRepository>();
   Account _account;
   Account get account => _account;
 

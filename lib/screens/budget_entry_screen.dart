@@ -6,8 +6,6 @@ import 'package:pursenal/core/enums/budget_interval.dart';
 import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/models/domain/budget.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
-import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/budgets_drift_repository.dart';
 import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/budget_entry_viewmodel.dart';
 import 'package:pursenal/widgets/shared/calculated_field.dart';

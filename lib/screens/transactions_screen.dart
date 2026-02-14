@@ -5,8 +5,6 @@ import 'package:pursenal/app/global/dimensions.dart';
 import 'package:pursenal/core/enums/app_date_format.dart';
 import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
-import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
 import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/transactions_viewmodel.dart';

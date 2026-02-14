@@ -54,7 +54,7 @@ class SettingsScreen extends StatelessWidget {
                         ],
                       ),
                       SwitchListTile(
-                          activeColor: Theme.of(context)
+                          activeThumbColor: Theme.of(context)
                               .colorScheme
                               .primary, // Changes selected color
                           inactiveTrackColor: Theme.of(context)
@@ -211,7 +211,7 @@ class SettingsScreen extends StatelessWidget {
                           ],
                         ),
                         SwitchListTile(
-                            activeColor: Theme.of(context)
+                            activeThumbColor: Theme.of(context)
                                 .colorScheme
                                 .primary, // Changes selected color
                             inactiveTrackColor: Theme.of(context)

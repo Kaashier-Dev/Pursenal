@@ -7,8 +7,6 @@ import 'package:pursenal/core/enums/loading_status.dart';
 import 'package:pursenal/core/enums/project_status.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/project.dart';
-import 'package:pursenal/core/repositories/drift/file_paths_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/projects_drift_repository.dart';
 import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/project_entry_viewmodel.dart';

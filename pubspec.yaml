@@ -44,6 +44,7 @@ dependencies:
   network_info_plus: ^7.0.0
   nsd: ^4.1.0
   device_info_plus: ^12.3.0
+  image: ^4.3.0
 
 dev_dependencies:
   flutter_test:

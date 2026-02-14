@@ -13,12 +13,6 @@ import 'package:pursenal/core/models/domain/account.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
 import 'package:pursenal/core/models/domain/project.dart';
 import 'package:pursenal/core/models/domain/transaction.dart';
-import 'package:pursenal/core/repositories/drift/account_types_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/accounts_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/balances_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/file_paths_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/projects_drift_repository.dart';
-import 'package:pursenal/core/repositories/drift/transactions_drift_repository.dart';
 import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/viewmodels/transaction_entry_viewmodel.dart';
@@ -222,7 +216,8 @@ class TransactionForm extends StatelessWidget {
                                       onChanged: (value) {
                                         viewmodel.isPayment = value;
                                       },
-                                      activeColor: Theme.of(context).cardColor,
+                                      activeThumbColor:
+                                          Theme.of(context).cardColor,
                                       thumbColor: WidgetStateProperty
                                           .resolveWith<Color>(
                                         (Set<WidgetState> states) {

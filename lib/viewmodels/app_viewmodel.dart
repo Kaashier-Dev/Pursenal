@@ -1,16 +1,13 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pursenal/app/extensions/color.dart';
 import 'package:pursenal/app/global/date_formats.dart';
-import 'package:pursenal/app/global/values.dart';
 import 'package:pursenal/app/global/values.dart' as values;
 import 'package:pursenal/core/abstracts/database_repository.dart';
 import 'package:pursenal/core/enums/app_date_format.dart';
 import 'package:pursenal/core/models/domain/profile.dart';
-import 'package:pursenal/core/models/domain/user.dart';
 import 'package:pursenal/core/models/domain/user_device.dart';
 import 'package:pursenal/core/repositories/drift/drift_repositories.dart';
 import 'package:pursenal/utils/app_paths.dart';

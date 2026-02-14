@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pursenal/app/global/values.dart';
-import 'package:pursenal/core/abstracts/abstract_repositories.dart';
 import 'package:pursenal/core/repositories/drift/drift_repositories.dart';
 import 'package:pursenal/core/repositories/repository_registry.dart';
 import 'package:pursenal/l10n/app_localizations.dart';

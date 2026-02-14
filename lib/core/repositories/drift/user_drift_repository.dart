@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-import 'package:pursenal/app/extensions/drift_models.dart';
 import 'package:pursenal/core/abstracts/user_repository.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
 import 'package:pursenal/core/models/domain/user.dart';
