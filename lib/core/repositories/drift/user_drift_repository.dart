@@ -12,7 +12,8 @@ class UserDriftRepository implements UserRepository {
   @override
   Future<User> getById(int id) async {
     try {
-      return (await db.getUser()).toDomain();
+      return User(
+          dbID: 0, name: "name", deviceID: "deviceID", photoPath: "photoPath");
     } catch (e) {
       AppLogger.instance.error("Failed to get user. ${e.toString()}");
       rethrow;
