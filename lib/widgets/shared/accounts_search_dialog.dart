@@ -55,51 +55,47 @@ class AccountsSearchDialogState extends State<AccountsSearchDialog> {
                   filterList(query);
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               fLedgers.isNotEmpty
-                  ? SizedBox(
-                      height: fLedgers.length > 5 ? 350 : null,
-                      child: ListView(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        shrinkWrap: true,
-                        children: fLedgers
-                            .map((a) => Material(
-                                  color: Colors.transparent,
-                                  child: ListTile(
-                                    title: Text(a.account.name,
-                                        textAlign: TextAlign.start,
-                                        overflow: TextOverflow.ellipsis,
+                  ? Flexible(
+                      child: SizedBox(
+                        height: fLedgers.length > 5 ? 350 : null,
+                        child: ListView(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          shrinkWrap: true,
+                          children: fLedgers
+                              .map((a) => Material(
+                                    color: Colors.transparent,
+                                    child: ListTile(
+                                      minTileHeight: 10,
+                                      subtitle: Text(
+                                        a.accountType.name,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .titleMedium),
-                                    trailing: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          a.balance.toCurrencyString(
-                                              widget.currency),
+                                            .labelSmall,
+                                      ),
+                                      title: Text(a.account.name,
+                                          textAlign: TextAlign.start,
+                                          overflow: TextOverflow.ellipsis,
                                           style: Theme.of(context)
                                               .textTheme
-                                              .titleSmall
-                                              ?.copyWith(
-                                                  fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          a.accountType.name,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelSmall,
-                                        ),
-                                      ],
+                                              .titleSmall),
+                                      trailing: Text(
+                                        a.balance
+                                            .toCurrencyString(widget.currency),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.bold),
+                                      ),
+                                      onTap: () {
+                                        Navigator.of(context).pop(a.account);
+                                      },
                                     ),
-                                    onTap: () {
-                                      Navigator.of(context).pop(a.account);
-                                    },
-                                  ),
-                                ))
-                            .toList(),
+                                  ))
+                              .toList(),
+                        ),
                       ),
                     )
                   : Center(

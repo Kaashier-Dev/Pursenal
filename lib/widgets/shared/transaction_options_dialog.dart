@@ -92,48 +92,64 @@ class _TransactionOptionsDialogState extends State<TransactionOptionsDialog> {
       AppLocalizations.of(context)!.fundForTransaction,
       AppLocalizations.of(context)!.accountForTransaction
     ];
-    return AlertDialog(
-      titlePadding: const EdgeInsets.all(0),
-      title: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
-            child: Text(AppLocalizations.of(context)!.select(titles[pageNo]),
-                style: Theme.of(context).textTheme.titleLarge),
-          ),
-          const SizedBox(
-            height: 24,
-          ),
-          Visibility(
-            visible: pageNo == 2,
-            child: SizedBox(
-                width: smallWidth,
-                child: SearchField(searchFn: (f) {
-                  setState(() {
-                    fOtherAccounts = otherAccounts
-                        .where((a) => a
-                            .toString()
-                            .toLowerCase()
-                            .contains(f.toLowerCase()))
-                        .toList();
-                  });
-                })),
-          ),
-        ],
-      ),
-      content: SizedBox(
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      insetPadding: const EdgeInsets.all(20),
+      child: SizedBox(
         width: smallWidth,
-        child: buildList(appViewmodel.paymentColor, appViewmodel.receiptColor),
+        child: Padding(
+          padding: EdgeInsets.all(2),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
+                child: Text(
+                    AppLocalizations.of(context)!.select(titles[pageNo]),
+                    style: Theme.of(context).textTheme.titleLarge),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Visibility(
+                visible: pageNo == 2,
+                child: SizedBox(
+                    width: smallWidth,
+                    child: SearchField(searchFn: (f) {
+                      setState(() {
+                        fOtherAccounts = otherAccounts
+                            .where((a) => a
+                                .toString()
+                                .toLowerCase()
+                                .contains(f.toLowerCase()))
+                            .toList();
+                      });
+                    })),
+              ),
+              Flexible(
+                child: SizedBox(
+                  width: smallWidth,
+                  child: buildList(
+                      appViewmodel.paymentColor, appViewmodel.receiptColor),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        goToTransactionEditScreen();
+                      },
+                      child: Text(AppLocalizations.of(context)!.skip)),
+                ),
+              )
+            ],
+          ),
+        ),
       ),
-      contentPadding: const EdgeInsets.only(top: 2, bottom: 6),
-      actions: [
-        TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              goToTransactionEditScreen();
-            },
-            child: Text(AppLocalizations.of(context)!.skip))
-      ],
     );
   }
 
