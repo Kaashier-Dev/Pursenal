@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
+import 'package:drift/isolate.dart';
+import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pursenal/app/global/values.dart';
 import 'package:pursenal/core/enums/budget_interval.dart';
@@ -12,10 +14,12 @@ import 'package:pursenal/core/enums/project_status.dart';
 import 'package:pursenal/core/enums/voucher_type.dart';
 import 'package:pursenal/core/models/drift/models.dart';
 import 'package:pursenal/utils/app_logger.dart';
+import 'package:pursenal/utils/db_key_gen.dart';
 import 'package:pursenal/utils/db_utils.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as p;
+import 'package:sqlite3/sqlite3.dart';
 
 part 'app_drift_database.g.dart';
 
@@ -1478,4 +1482,139 @@ class AppDriftDatabase extends _$AppDriftDatabase {
 Future<String> _getDatabasePath() async {
   final appDir = await getApplicationSupportDirectory();
   return p.join(appDir.path, 'db', 'app_drift_database.sqlite');
+}
+
+void checkSqliteLibrary() {
+  // Open a temporary in-memory database to check the library features
+  final tempDb = sqlite3.openInMemory();
+  try {
+    // sqlite3mc_version() is ONLY available if the hook worked
+
+    final result = tempDb.select('SELECT sqlite3mc_version();');
+    AppLogger.instance.info('SUCCESS: Using SQLite3MC ${result.first}');
+  } catch (e) {
+    AppLogger.instance.error(
+        'Encryption library NOT loaded. Current SQLite version: ${sqlite3.version.libVersion}\n$e');
+  } finally {
+    tempDb.close();
+  }
+}
+
+Future<bool> _migrateToEncryption(
+    String oldPath, String newPath, String password) async {
+  Database? plainDb;
+  try {
+    final newFile = File(newPath);
+    if (await newFile.exists()) await newFile.delete();
+
+    plainDb = sqlite3.open(oldPath);
+
+    // 1. Attach the new database with the key
+    plainDb.execute("ATTACH DATABASE '$newPath' AS encrypted KEY '$password';");
+    plainDb.execute("PRAGMA encrypted.cipher = 'sqlcipher';");
+
+    // 2. Step-by-Step Manual Copy
+    // Get all tables from the original DB
+    final tables = plainDb.select(
+        "SELECT name, sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';");
+
+    for (final row in tables) {
+      final tableName = row['name'] as String;
+      final createSql = row['sql'] as String;
+
+      // Recreate the table in the 'encrypted' schema
+      // We replace 'CREATE TABLE "' with 'CREATE TABLE encrypted."'
+      final encryptedCreateSql =
+          createSql.replaceFirst('CREATE TABLE ', 'CREATE TABLE encrypted.');
+      plainDb.execute(encryptedCreateSql);
+
+      // Copy the data
+      plainDb.execute(
+          "INSERT INTO encrypted.$tableName SELECT * FROM main.$tableName;");
+      AppLogger.instance.info("Migrated table: $tableName");
+    }
+
+    // 3. Transfer the schema version (Crucial for Drift)
+    final versionRow = plainDb.select('PRAGMA user_version;').first;
+    final version = versionRow.columnAt(0) as int;
+    plainDb.execute("PRAGMA encrypted.user_version = $version;");
+
+    // 4. Verify before finishing
+    final check = plainDb.select(
+        "SELECT name FROM encrypted.sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';");
+    AppLogger.instance
+        .info("Final Table Count in Encrypted DB: ${check.length}");
+
+    plainDb.execute("DETACH DATABASE encrypted;");
+    return true;
+  } catch (e) {
+    AppLogger.instance.error('Manual Migration failed: $e');
+    return false;
+  } finally {
+    plainDb?.close();
+  }
+}
+
+Future<DatabaseConnection> getIsolateDBConnection() async {
+  try {
+    final appDir = await getApplicationSupportDirectory();
+    final plainDBPath = p.join(appDir.path, 'db', 'app_drift_database.sqlite');
+    final encryptedDBPath = p.join(appDir.path, 'db', 'pursenal_db.sqlite');
+
+    String password = await getOrGenerateKey();
+    bool existsPlain = await File(plainDBPath).exists();
+    bool existsEncrypted = await File(encryptedDBPath).exists();
+    bool isMigrated = false;
+
+    if (existsPlain) {
+      if (!existsEncrypted) {
+        checkSqliteLibrary();
+        isMigrated =
+            await _migrateToEncryption(plainDBPath, encryptedDBPath, password);
+
+        if (isMigrated) await _deleteDB(plainDBPath);
+      } else {
+        isMigrated = true;
+      }
+    }
+
+    // Determine final path and pass password as string
+    final finalPath =
+        (existsPlain & !isMigrated) ? plainDBPath : encryptedDBPath;
+    final finalPass = (finalPath == encryptedDBPath) ? password : 'null';
+
+    // IMPORTANT: Pass the arguments as a list to the spawn function
+    final isolate = await DriftIsolate.spawn(
+      () => _backgroundConnection([finalPath, finalPass]),
+    );
+    return await isolate.connect();
+  } catch (e) {
+    AppLogger.instance.error(' ${e.toString()}');
+    rethrow;
+  }
+}
+
+Future<void> _deleteDB(String path) async {
+  try {
+    await File(path).delete();
+  } catch (e) {
+    AppLogger.instance.error(' ${e.toString()}');
+    rethrow;
+  }
+}
+
+DatabaseConnection _backgroundConnection(List<String> args) {
+  final path = args[0];
+  final password = args[1]; // This will be 'null' as a string if no password
+
+  return DatabaseConnection(
+    NativeDatabase.createInBackground(
+      File(path),
+      setup: password == 'null'
+          ? null
+          : (rawDb) {
+              rawDb.execute("PRAGMA key = '$password';");
+            },
+    ),
+  );
 }

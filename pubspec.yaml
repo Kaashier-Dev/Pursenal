@@ -12,10 +12,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   provider: ^6.1.2
-  drift: ^2.23.1
-  drift_flutter: ^0.1.0
+  drift: ^2.31.0
   ffi: ^2.1.3
-  sqlite3_flutter_libs: ^0.5.28
   path_provider: ^2.1.5
   path: ^1.9.0
   intl: ^0.20.2
@@ -39,6 +37,11 @@ dependencies:
   fixnum: ^1.1.1
   device_info_plus: ^12.3.0
   image: ^4.3.0
+  flutter_secure_storage: ^10.0.0
+  sqlite3: ^3.1.6
+
+dependency_overrides:
+  sqlite3: ^3.1.6
 
 dev_dependencies:
   flutter_test:
@@ -124,3 +127,8 @@ package_rename_config:
     app_name: Pursenal # (String) The window title & software name of the windows app
     organization: Kaashier # (String) The organization name (company name) of the windows app
     exe_name: Pursenal # (String) The executable name (binary name) of the windows app
+
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc # This enables encryption support

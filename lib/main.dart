@@ -1,10 +1,5 @@
-import 'dart:io';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:drift/drift.dart';
-import 'package:drift/isolate.dart';
-import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pursenal/app/global/values.dart';
 import 'package:pursenal/core/repositories/drift/drift_repositories.dart';
@@ -19,7 +14,6 @@ import 'package:pursenal/screens/main_screen.dart';
 import 'package:pursenal/core/db/app_drift_database.dart';
 import 'package:pursenal/screens/profile_selection_screen.dart';
 import 'package:pursenal/utils/app_logger.dart';
-import 'package:path/path.dart' as p;
 import 'package:pursenal/viewmodels/app_viewmodel.dart';
 import 'package:pursenal/widgets/shared/loading_body.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -27,16 +21,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 // Get the database path for Drift
-Future<String> _getDatabasePath() async {
-  final appDir = await getApplicationSupportDirectory();
-  return p.join(appDir.path, 'db', 'app_drift_database.sqlite');
-}
-
-// Opens a Drift database connection
-DatabaseConnection _backgroundConnection(String path) {
-  final database = NativeDatabase(File(path));
-  return DatabaseConnection(database);
-}
 
 // Intended to use for navigating to transaction entry screen on clicking reminder notification
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -57,12 +41,11 @@ void main() async {
     }
   });
 
-  // Precompute the database path
-  final dbPath = await _getDatabasePath();
-
   // Pass a synchronous function to spawn Drift database in a separate isolate
-  final isolate = await DriftIsolate.spawn(() => _backgroundConnection(dbPath));
-  final connection = await isolate.connect();
+  // final isolate = await DriftIsolate.spawn(() => _backgroundConnection(dbPath));
+  // final connection = await isolate.connect();
+
+  final connection = await getIsolateDBConnection();
 
   // The ThemeProvider for the App.
   final themeProvider = ThemeProvider();
