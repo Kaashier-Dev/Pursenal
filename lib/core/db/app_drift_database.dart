@@ -1457,15 +1457,24 @@ class AppDriftDatabase extends _$AppDriftDatabase {
 
   Future<void> exportDatabase(File destination) async {
     if (await destination.exists()) {
-      await destination.delete(); // Delete the existing file
+      await destination.delete();
     }
-    try {
-      await exclusively(() async {
-        await customStatement('VACUUM INTO ?', [destination.path]);
-      });
-    } catch (e) {
-      AppLogger.instance.error("Cannot export database. $e");
-    }
+
+    await exclusively(() async {
+      final path = destination.path.replaceAll("'", "''");
+
+      await customStatement(
+        "ATTACH DATABASE '$path' AS backup KEY '$backupKey';",
+      );
+
+      await customStatement(
+        "SELECT sqlcipher_export('backup');",
+      );
+
+      await customStatement(
+        "DETACH DATABASE backup;",
+      );
+    });
   }
 
   Future<void> importDatabase(File backupFile) async {

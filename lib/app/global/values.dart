@@ -15,6 +15,7 @@ const int incomeTypeID = 4;
 const int expenseTypeID = 5;
 const int advanceTypeID = 6;
 const int peopleTypeID = 7;
+const String backupKey = "pursenal_db_backup_key_yep_this_is_it";
 
 const List<int> incExpIDs = [incomeTypeID, expenseTypeID];
 
