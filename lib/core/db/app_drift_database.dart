@@ -1466,9 +1466,33 @@ class AppDriftDatabase extends _$AppDriftDatabase {
       await customStatement(
         "ATTACH DATABASE '$path' AS backup KEY '$backupKey';",
       );
+      await customStatement("PRAGMA backup.cipher = 'aes256cbc';");
 
+      final tables = await customSelect(
+        "SELECT name, sql FROM main.sqlite_master "
+        "WHERE type = 'table' AND name NOT LIKE 'sqlite_%';",
+      ).get();
+
+      for (final table in tables) {
+        final tableName = table.data['name'] as String;
+        final createSql = table.data['sql'] as String;
+        final escapedName = tableName.replaceAll('"', '""');
+        final backupCreateSql = createSql.replaceFirst(
+          'CREATE TABLE ',
+          'CREATE TABLE backup.',
+        );
+
+        await customStatement(backupCreateSql);
+        await customStatement(
+          'INSERT INTO backup."$escapedName" '
+          'SELECT * FROM main."$escapedName";',
+        );
+      }
+
+      final version =
+          await customSelect('PRAGMA main.user_version').getSingle();
       await customStatement(
-        "SELECT sqlcipher_export('backup');",
+        'PRAGMA backup.user_version = ${version.data.values.first};',
       );
 
       await customStatement(
@@ -1478,19 +1502,63 @@ class AppDriftDatabase extends _$AppDriftDatabase {
   }
 
   Future<void> importDatabase(File backupFile) async {
-    try {
-      await close();
-      await File(await _getDatabasePath())
-          .writeAsBytes(await backupFile.readAsBytes(), flush: true);
-    } catch (e) {
-      AppLogger.instance.error("Cannot import database. $e");
+    if (!await backupFile.exists()) {
+      throw Exception('Backup file does not exist');
     }
-  }
-}
 
-Future<String> _getDatabasePath() async {
-  final appDir = await getApplicationSupportDirectory();
-  return p.join(appDir.path, 'db', 'app_drift_database.sqlite');
+    final path = backupFile.path.replaceAll("'", "''");
+
+    await exclusively(() async {
+      try {
+        await customStatement(
+          "ATTACH DATABASE '$path' AS backup KEY '$backupKey';",
+        );
+        await customStatement("PRAGMA backup.cipher = 'aes256cbc';");
+
+        final tables = await customSelect(
+          "SELECT name FROM backup.sqlite_master "
+          "WHERE type = 'table' AND name NOT LIKE 'sqlite_%';",
+        ).get();
+
+        if (tables.isEmpty) {
+          throw Exception('Backup database contains no tables');
+        }
+
+        await customStatement('PRAGMA foreign_keys = OFF;');
+        await transaction(() async {
+          for (final table in tables) {
+            final tableName = table.data['name'] as String;
+            final escapedName = tableName.replaceAll('"', '""');
+
+            await customStatement('DELETE FROM main."$escapedName";');
+            await customStatement(
+              'INSERT INTO main."$escapedName" '
+              'SELECT * FROM backup."$escapedName";',
+            );
+          }
+
+          final version =
+              await customSelect('PRAGMA backup.user_version').getSingle();
+          await customStatement(
+            'PRAGMA user_version = ${version.data.values.first};',
+          );
+        });
+
+        await customStatement('PRAGMA foreign_keys = ON;');
+        final foreignKeyErrors =
+            await customSelect('PRAGMA foreign_key_check').get();
+        if (foreignKeyErrors.isNotEmpty) {
+          throw Exception('Imported database failed foreign-key validation');
+        }
+
+        await customStatement('DETACH DATABASE backup;');
+      } catch (_) {
+        await customStatement('PRAGMA foreign_keys = ON;');
+        await customStatement('DETACH DATABASE backup;');
+        rethrow;
+      }
+    });
+  }
 }
 
 void checkSqliteLibrary() {
@@ -1520,7 +1588,7 @@ Future<bool> _migrateToEncryption(
 
     // 1. Attach the new database with the key
     plainDb.execute("ATTACH DATABASE '$newPath' AS encrypted KEY '$password';");
-    plainDb.execute("PRAGMA encrypted.cipher = 'sqlcipher';");
+    plainDb.execute("PRAGMA encrypted.cipher = 'aes256cbc';");
 
     // 2. Step-by-Step Manual Copy
     // Get all tables from the original DB
@@ -1622,6 +1690,7 @@ DatabaseConnection _backgroundConnection(List<String> args) {
       setup: password == 'null'
           ? null
           : (rawDb) {
+              rawDb.execute("PRAGMA cipher = 'aes256cbc';");
               rawDb.execute("PRAGMA key = '$password';");
             },
     ),

@@ -21,7 +21,6 @@ class DatabaseDriftRepository implements DatabaseRepository {
 
   @override
   Future<void> restoreDatabase(File backupFile) {
-    // TODO: implement restoreDatabase
-    throw UnimplementedError();
+    return db.importDatabase(backupFile);
   }
 }

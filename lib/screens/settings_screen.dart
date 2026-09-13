@@ -362,21 +362,32 @@ class SettingsScreen extends StatelessWidget {
                       ListTile(
                         title: Text(AppLocalizations.of(context)!.import),
                         onTap: () async {
-                          FilePickerResult? result =
-                              await FilePicker.platform.pickFiles();
+                          try {
+                            final result = await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['sqlite', 'db', 'pursenal'],
+                            );
 
-                          try {} catch (e) {
+                            if (result != null &&
+                                result.files.isNotEmpty &&
+                                result.files.single.path != null) {
+                              final backupFile =
+                                  File(result.files.single.path!);
+                              final importStatus =
+                                  await viewmodel.importDatabase(backupFile);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(importStatus)));
+                              }
+                            }
+                          } catch (e) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'File picker is not available on this system.')));
+                                SnackBar(
+                                    content: Text(
+                                        'Unable to restore backup: ${e.toString()}')),
+                              );
                             }
-                          }
-
-                          if (result != null) {
-                          } else {
-                            // User canceled the picker
                           }
                         },
                       ),
