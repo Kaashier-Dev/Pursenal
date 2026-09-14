@@ -98,7 +98,7 @@ class _TransactionOptionsDialogState extends State<TransactionOptionsDialog> {
       child: SizedBox(
         width: smallWidth,
         child: Padding(
-          padding: EdgeInsets.all(2),
+          padding: const EdgeInsets.all(2),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

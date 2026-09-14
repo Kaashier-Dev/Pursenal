@@ -78,7 +78,7 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
 
   SharedPreferences? _prefs;
 
-  init() async {
+  Future<void> init() async {
     try {
       loadingStatus = LoadingStatus.loading;
       notifyListeners();
@@ -106,6 +106,7 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
       _filterTransactions();
       notifyListeners();
       _populateVoucherTypes();
+      await _getAllLedgers();
       _populateAccounts();
       loadingStatus = LoadingStatus.completed;
     } catch (e) {
@@ -154,7 +155,7 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
     notifyListeners();
   }
 
-  addToFilter({
+  Future<void> addToFilter({
     VoucherType? voucherType,
     DateTime? sDate,
     DateTime? eDate,
@@ -211,7 +212,7 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
     await _setFilterStartDate();
   }
 
-  _filterTransactions() {
+  void _filterTransactions() {
     searchLoadingStatus = LoadingStatus.loading;
     notifyListeners();
 
@@ -243,18 +244,18 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
     notifyListeners();
   }
 
-  _getAllLedgers() async {
+  Future<void> _getAllLedgers() async {
     allLedgers = await _accountsRepository.getLedgers(profileId: profile.dbID);
     notifyListeners();
   }
 
-  _populateVoucherTypes() {
+  void _populateVoucherTypes() {
     // _voucherTypeFilters = {};
     voucherTypes = _transactions.map((t) => t.voucherType).toSet();
     notifyListeners();
   }
 
-  _populateAccounts() {
+  void _populateAccounts() {
     // fundFilters = {};
     // _otherAccountFilters = {};
 
