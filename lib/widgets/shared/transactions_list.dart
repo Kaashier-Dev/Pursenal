@@ -23,6 +23,9 @@ class TransactionsList extends StatelessWidget {
       required this.fTransactions,
       required this.profile,
       required this.initFn,
+      required this.sTransactions,
+      required this.selectTransaction,
+      this.isSelecting = false,
       this.account});
 
   /// Scroll controller for the screen
@@ -42,6 +45,12 @@ class TransactionsList extends StatelessWidget {
 
   /// Whether a specific account is selected for transactions
   final Account? account;
+
+  final Function(Transaction) selectTransaction;
+
+  final List<Transaction> sTransactions;
+
+  final bool isSelecting;
 
   @override
   Widget build(BuildContext context) {
@@ -199,6 +208,13 @@ class TransactionsList extends StatelessWidget {
                   isTransfer: isTransfer,
                   amount: amount,
                   onClick: () {
+                    if (isSelecting) {
+                      selectTransaction(
+                          t); // Unselect the transaction if it's already selected
+
+                      return;
+                    }
+
                     Navigator.of(context)
                         .push(MaterialPageRoute(
                       builder: (context) => TransactionScreen(
@@ -206,14 +222,22 @@ class TransactionsList extends StatelessWidget {
                         profile: profile,
                       ),
                     ))
-                        .then((_) {
-                      initFn();
-                    });
+                        .then(
+                      (_) {
+                        initFn();
+                      },
+                    );
+                  },
+                  onLongPress: () {
+                    if (!sTransactions.contains(t) && !isSelecting) {
+                      selectTransaction(t);
+                    }
                   },
                   vchType: t.voucherType,
                   transactionID: t.dbID,
                   narr: t.narration,
                   fundName: fundName,
+                  isSelected: sTransactions.contains(t),
                 );
               })
             ],

@@ -17,7 +17,10 @@ class TransactionsListWide extends StatelessWidget {
     required this.fTransactions,
     required this.profile,
     required this.initFn,
+    required this.sTransactions,
+    required this.selectTransaction,
     this.account,
+    this.isSelecting = false,
   });
 
   /// Scroll controller for the screen
@@ -34,6 +37,12 @@ class TransactionsListWide extends StatelessWidget {
 
   /// Whether an specific account is selected for transactions
   final Account? account;
+
+  final Function(Transaction) selectTransaction;
+
+  final List<Transaction> sTransactions;
+
+  final bool isSelecting;
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +93,12 @@ class TransactionsListWide extends StatelessWidget {
           isTransfer: isTransfer,
           amount: amount,
           onClick: () {
+            if (isSelecting) {
+              selectTransaction(
+                  t); // Unselect the transaction if it's already selected
+
+              return;
+            }
             Navigator.of(context)
                 .push(
                   MaterialPageRoute(
@@ -99,6 +114,12 @@ class TransactionsListWide extends StatelessWidget {
           transactionID: t.dbID,
           narr: t.narration,
           fundName: fundName,
+          onLongPress: () {
+            if (!sTransactions.contains(t) && !isSelecting) {
+              selectTransaction(t);
+            }
+          },
+          isSelected: sTransactions.contains(t),
         ).animate().fade(duration: 250.ms);
       },
     );

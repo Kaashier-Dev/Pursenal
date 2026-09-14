@@ -40,6 +40,7 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
 
   List<Transaction> _transactions = [];
   List<Transaction> _fTransactions = [];
+  final List<Transaction> _sTransactions = [];
 
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
   DateTime _endDate = DateTime.now();
@@ -47,6 +48,9 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
   DateTime get endDate => _endDate;
   List<Transaction> get transactions => _transactions;
   List<Transaction> get fTransactions => _fTransactions;
+  List<Transaction> get sTransactions => _sTransactions;
+
+  bool _isSelecting = false;
 
   Set<VoucherType> voucherTypes = {};
   final Set<VoucherType> _voucherTypeFilters = {};
@@ -62,6 +66,8 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
   set otherAccountFilters(value) => _otherAccountFilters = value;
 
   Set<VoucherType> get voucherTypeFilters => _voucherTypeFilters;
+
+  bool get isSelecting => _isSelecting;
 
   String feedbackText = "";
 
@@ -83,18 +89,28 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
 
       scrollController.addListener(updateHeaderVisibility);
 
+      await refreshTransactions();
+    } catch (e) {
+      AppLogger.instance.error(' ${e.toString()}');
+      errorText = 'Error: Failed to initialise transactions';
+      loadingStatus = LoadingStatus.error;
+      notifyListeners();
+    }
+  }
+
+  Future<void> refreshTransactions() async {
+    try {
+      loadingStatus = LoadingStatus.loading;
+      notifyListeners();
       await getTransactionsWithAccounts();
       _filterTransactions();
       notifyListeners();
       _populateVoucherTypes();
       _populateAccounts();
       loadingStatus = LoadingStatus.completed;
-
-      // getAllAccounts();
-      _getAllLedgers();
     } catch (e) {
       AppLogger.instance.error(' ${e.toString()}');
-      errorText = 'Error: Failed to initialise transactions';
+      errorText = 'Error: Failed to refresh transactions';
       loadingStatus = LoadingStatus.error;
       notifyListeners();
     }
@@ -113,6 +129,29 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
   set searchTerm(String term) {
     _searchTerm = term.toLowerCase();
     _filterTransactions();
+  }
+
+  set isSelecting(bool value) {
+    if (value == _isSelecting) return;
+    _isSelecting = value;
+    if (!value) {
+      _sTransactions.clear();
+    }
+    notifyListeners();
+  }
+
+  void selectTransaction(Transaction transaction) {
+    if (_sTransactions.contains(transaction)) {
+      _sTransactions.remove(transaction);
+    } else {
+      _sTransactions.add(transaction);
+    }
+    if (_sTransactions.isEmpty) {
+      _isSelecting = false;
+    } else {
+      _isSelecting = true;
+    }
+    notifyListeners();
   }
 
   addToFilter({
@@ -159,6 +198,8 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
         _otherAccountFilters.add(oAcc.dbID);
       }
     }
+
+    isSelecting = false;
 
     if (transactionsFetchNeeded) {
       await getTransactionsWithAccounts();
@@ -339,6 +380,22 @@ class TransactionsViewmodel extends ChangeNotifier with Exporter {
           .error("Error setting Last updated timestamp ${e.toString()}");
     }
     return null;
+  }
+
+  Future<void> deleteSelectedTransactions() async {
+    try {
+      for (var t in _sTransactions) {
+        await _transactionsRepository.delete(t.dbID);
+      }
+      feedbackText = "Deleted ${_sTransactions.length} transactions";
+      _sTransactions.clear();
+      _isSelecting = false;
+      await refreshTransactions();
+    } catch (e) {
+      AppLogger.instance.error(' ${e.toString()}');
+      errorText = 'Error: Failed to delete transactions';
+    }
+    notifyListeners();
   }
 
   @override

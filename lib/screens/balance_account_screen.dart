@@ -633,6 +633,8 @@ class TransactionsSection extends StatelessWidget {
                         account: viewmodel.account,
                         fTransactions: viewmodel.fTransactions,
                         profile: viewmodel.profile,
+                        sTransactions: [],
+                        selectTransaction: (t) {},
                         initFn: () {
                           viewmodel.init();
                         });
@@ -643,6 +645,8 @@ class TransactionsSection extends StatelessWidget {
                       account: viewmodel.account,
                       fTransactions: viewmodel.fTransactions,
                       profile: viewmodel.profile,
+                      sTransactions: [],
+                      selectTransaction: (t) {},
                       initFn: () {
                         viewmodel.init();
                       });

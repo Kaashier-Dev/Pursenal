@@ -124,6 +124,67 @@ class TransactionsScreen extends StatelessWidget {
             heroTag: "addAccount",
             child: const Icon(Icons.add),
           ),
+          bottomNavigationBar: viewmodel.isSelecting
+              ? BottomAppBar(
+                  height: 50,
+                  padding: const EdgeInsets.all(5),
+                  color: Theme.of(context).cardColor,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton.icon(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              WidgetStateProperty.all<Color>(Colors.red),
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text(AppLocalizations.of(context)!.delete),
+                              content: Text(
+                                "${AppLocalizations.of(context)!.delete} ${viewmodel.sTransactions.length} transactions?",
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                      AppLocalizations.of(context)!.cancel),
+                                ),
+                                TextButton(
+                                  style: ButtonStyle(
+                                    foregroundColor:
+                                        WidgetStateProperty.all<Color>(
+                                            Colors.red),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    viewmodel.deleteSelectedTransactions();
+                                  },
+                                  child: Text(
+                                      AppLocalizations.of(context)!.delete),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.delete),
+                        label: Text(
+                            "${AppLocalizations.of(context)!.delete} (${viewmodel.sTransactions.length})"),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          viewmodel.isSelecting = false;
+                        },
+                        icon: const Icon(Icons.close),
+                        label: Text(AppLocalizations.of(context)!.cancel),
+                      ),
+                    ],
+                  ),
+                )
+              : null,
         ),
       ),
     );
@@ -406,18 +467,29 @@ class TransactionsSection extends StatelessWidget {
                       LoadingStatus.completed) {
                     if (!appViewmodel.isPhone) {
                       return TransactionsListWide(
-                          scrollController: viewmodel.scrollController,
-                          fTransactions: viewmodel.fTransactions,
-                          profile: viewmodel.profile,
-                          initFn: () {
-                            viewmodel.init();
-                          });
+                        scrollController: viewmodel.scrollController,
+                        fTransactions: viewmodel.fTransactions,
+                        profile: viewmodel.profile,
+                        initFn: () {
+                          viewmodel.init();
+                        },
+                        sTransactions: viewmodel.sTransactions,
+                        selectTransaction: (t) {
+                          viewmodel.selectTransaction(t);
+                        },
+                        isSelecting: viewmodel.isSelecting,
+                      );
                     }
                     return TransactionsList(
                         scrollController: viewmodel.scrollController,
                         fDates: viewmodel.fDates,
                         fTransactions: viewmodel.fTransactions,
                         profile: viewmodel.profile,
+                        selectTransaction: (t) {
+                          viewmodel.selectTransaction(t);
+                        },
+                        sTransactions: viewmodel.sTransactions,
+                        isSelecting: viewmodel.isSelecting,
                         initFn: () {
                           viewmodel.init();
                         });

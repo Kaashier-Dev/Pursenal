@@ -520,6 +520,8 @@ class TransactionsSection extends StatelessWidget {
           scrollController: viewmodel.scrollController,
           fTransactions: viewmodel.transactions,
           profile: viewmodel.profile,
+          sTransactions: [],
+          selectTransaction: (t) {},
           initFn: () {
             viewmodel.init();
           });
@@ -529,6 +531,8 @@ class TransactionsSection extends StatelessWidget {
         fDates: viewmodel.fDates,
         fTransactions: viewmodel.transactions,
         profile: viewmodel.profile,
+        sTransactions: [],
+        selectTransaction: (t) {},
         initFn: () {
           viewmodel.init();
         });

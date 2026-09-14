@@ -22,6 +22,8 @@ class TransactionTile extends StatelessWidget {
       this.isTransfer = false,
       required this.currency,
       this.isColorful = false,
+      this.onLongPress,
+      this.isSelected = false,
       this.isNegative = false});
 
   /// Transaction voucher date
@@ -60,102 +62,56 @@ class TransactionTile extends StatelessWidget {
   /// Whether to show different color for elements
   final bool isColorful;
 
+  final Function? onLongPress;
+
+  final bool isSelected;
+
   @override
   Widget build(BuildContext context) {
     final appViewmodel = Provider.of<AppViewmodel>(context);
-    return Material(
-      color: Colors.transparent,
-      child: ListTile(
-        minVerticalPadding: 2,
-        visualDensity: const VisualDensity(horizontal: 0.5, vertical: 0.5),
-        title: LayoutBuilder(builder: (context, constraints) {
-          bool isWide = constraints.maxWidth > 800;
-          if (isWide) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    "#$transactionID",
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Text(
-                    appViewmodel.dateFormat.format(vchDate),
-                  ),
-                ),
-                Expanded(
-                  flex: 6,
-                  child: Text(
-                    accountName,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium,
-                    maxLines: 2,
-                  ),
-                ),
-                Expanded(
-                  flex: fundName != null ? 4 : 0,
-                  child: Text(
-                    fundName != null
-                        ? isTransfer
-                            ? AppLocalizations.of(context)!
-                                .transferFrom(fundName!)
-                            : vchType == VoucherType.payment
-                                ? AppLocalizations.of(context)!
-                                    .paidFrom(fundName!)
-                                : AppLocalizations.of(context)!
-                                    .receivedIn(fundName!)
-                        : "",
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Text(
-                    narr,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Text(
-                    "${isTransfer ? "" : isNegative ? "-" : "+"} ${amount.toCurrencyString(currency)}",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: (isTransfer) || !isColorful
-                            ? null
-                            : isNegative
-                                ? appViewmodel.paymentColor
-                                : appViewmodel.receiptColor),
-                    maxLines: 2,
-                    overflow: TextOverflow.fade,
-                    textAlign: TextAlign.end,
-                  ),
-                ),
-              ],
-            );
-          }
-          return Column(
-            children: [
-              Row(
+    return GestureDetector(
+      onTap: () => onClick(),
+      onLongPress: onLongPress != null ? () => onLongPress!() : null,
+      onSecondaryTap: onLongPress != null ? () => onLongPress!() : null,
+      child: Container(
+        margin: const EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
+        color: isSelected ? Theme.of(context).cardColor : null,
+        child: ListTile(
+          minVerticalPadding: 2,
+          visualDensity: const VisualDensity(horizontal: 0.5, vertical: 0.5),
+          title: LayoutBuilder(builder: (context, constraints) {
+            bool isWide = constraints.maxWidth > 800;
+            if (isWide) {
+              return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "#$transactionID",
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                  Expanded(
+                    child: Text(
+                      "#$transactionID",
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
                   ),
                   Expanded(
+                    flex: 4,
+                    child: Text(
+                      appViewmodel.dateFormat.format(vchDate),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 6,
+                    child: Text(
+                      accountName,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
+                      maxLines: 2,
+                    ),
+                  ),
+                  Expanded(
+                    flex: fundName != null ? 4 : 0,
                     child: Text(
                       fundName != null
                           ? isTransfer
@@ -168,79 +124,133 @@ class TransactionTile extends StatelessWidget {
                                       .receivedIn(fundName!)
                           : "",
                       overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.end,
+                      textAlign: TextAlign.start,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ),
+                  Expanded(
+                    flex: 4,
+                    child: Text(
+                      narr,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: Text(
+                      "${isTransfer ? "" : isNegative ? "-" : "+"} ${amount.toCurrencyString(currency)}",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: (isTransfer) || !isColorful
+                              ? null
+                              : isNegative
+                                  ? appViewmodel.paymentColor
+                                  : appViewmodel.receiptColor),
+                      maxLines: 2,
+                      overflow: TextOverflow.fade,
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
                 ],
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-                    child: Center(
+              );
+            }
+            return Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "#$transactionID",
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Expanded(
+                      child: Text(
+                        fundName != null
+                            ? isTransfer
+                                ? AppLocalizations.of(context)!
+                                    .transferFrom(fundName!)
+                                : vchType == VoucherType.payment
+                                    ? AppLocalizations.of(context)!
+                                        .paidFrom(fundName!)
+                                    : AppLocalizations.of(context)!
+                                        .receivedIn(fundName!)
+                            : "",
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w500),
+                              vchDate.day.toString(),
+                            ),
+                            Text(
+                              style: const TextStyle(fontSize: 10),
+                              monthString.format(vchDate),
+                            ),
+                            Text(
+                              yearString.format(vchDate),
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w500),
-                            vchDate.day.toString(),
+                            accountName,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium,
+                            maxLines: 2,
                           ),
-                          Text(
-                            style: const TextStyle(fontSize: 10),
-                            monthString.format(vchDate),
-                          ),
-                          Text(
-                            yearString.format(vchDate),
-                            style: const TextStyle(fontSize: 10),
-                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Text(narr,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleSmall),
+                          )
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          accountName,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleMedium,
-                          maxLines: 2,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text(narr,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleSmall),
-                        )
-                      ],
+                    Text(
+                      "${isTransfer ? "" : isNegative ? "-" : "+"} ${amount.toCurrencyString(currency)}",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: (isTransfer) || !isColorful
+                              ? null
+                              : isNegative
+                                  ? appViewmodel.paymentColor
+                                  : appViewmodel.receiptColor),
+                      maxLines: 2,
+                      overflow: TextOverflow.fade,
                     ),
-                  ),
-                  Text(
-                    "${isTransfer ? "" : isNegative ? "-" : "+"} ${amount.toCurrencyString(currency)}",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: (isTransfer) || !isColorful
-                            ? null
-                            : isNegative
-                                ? appViewmodel.paymentColor
-                                : appViewmodel.receiptColor),
-                    maxLines: 2,
-                    overflow: TextOverflow.fade,
-                  ),
-                ],
-              ),
-            ],
-          );
-        }),
-        onTap: () {
-          onClick();
-        },
+                  ],
+                ),
+              ],
+            );
+          }),
+        ),
       ),
     );
   }
